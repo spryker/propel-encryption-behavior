@@ -1,6 +1,6 @@
 <?php
 
-$input = <<<'EOT'
+$objectFilterInput = <<<'EOT'
     public function getTestColumn()
     {
         return $this->test_column;
@@ -24,7 +24,7 @@ $input = <<<'EOT'
     } // setTestColumn()
 EOT;
 
-$expected = <<<'EOT'
+$objectFilterExpected = <<<'EOT'
     public function getTestColumn()
     {
         // Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
@@ -52,6 +52,72 @@ $expected = <<<'EOT'
     } // setTestColumn()
 EOT;
 
+$mapFilterInput = <<<EOT
+class ApplicationTableMap extends TableMap
+{
+    use InstancePoolTrait;
+    use TableMapTrait;
+
+    /**
+     * The (dot-path) name of this class
+     */
+    const CLASS_NAME = 'scholarshipApplication.Map.ApplicationTableMap';
+
+    /**
+     * The default database name for this class
+     */
+    const DATABASE_NAME = 'scholarship_application';
+
+EOT;
+
+$mapFilterExpected = <<<EOT
+class ApplicationTableMap extends TableMap
+{
+    use InstancePoolTrait;
+    use TableMapTrait;
+
+    /**
+     * The (dot-path) name of this class
+     */
+    const CLASS_NAME = 'scholarshipApplication.Map.ApplicationTableMap';
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    const ENCRYPTED_COLUMNS = 'TestColumn';
+
+    /**
+     * The default database name for this class
+     */
+    const DATABASE_NAME = 'scholarship_application';
+
+EOT;
+
+$mapFilterExpectedSecond = <<<EOT
+class ApplicationTableMap extends TableMap
+{
+    use InstancePoolTrait;
+    use TableMapTrait;
+
+    /**
+     * The (dot-path) name of this class
+     */
+    const CLASS_NAME = 'scholarshipApplication.Map.ApplicationTableMap';
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    const ENCRYPTED_COLUMNS = 'TestColumn TestColumn';
+
+    /**
+     * The default database name for this class
+     */
+    const DATABASE_NAME = 'scholarship_application';
+
+EOT;
+
+
+
 class MockColumn {
     public function getPhpName() {
         return "TestColumn";
@@ -78,32 +144,33 @@ class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
         return new MockTable();
     }
 
-    public function renderTemplate($filename, $vars = [], $templateDir = '/templates...') {
-        return $vars;
-    }
 }
 
 
 class BehaviorTest extends PHPUnit_Framework_TestCase {
 
-    public function testBehavior() {
-        global $input, $expected;
+    public function testObjectFilter() {
+        global $objectFilterInput, $objectFilterExpected;
 
         $behavior = new MockEncryptionBehavior();
 
-        $behavior->objectFilter($input);
+        $behavior->objectFilter($objectFilterInput);
 
-        $this->assertEquals($expected, $input);
+        $this->assertEquals($objectFilterExpected, $objectFilterInput);
     }
 
-    public function testStaticAttributes() {
+    public function testMapFilter() {
+        global $mapFilterInput, $mapFilterExpected, $mapFilterExpectedSecond;
+
         $behavior = new MockEncryptionBehavior();
 
-        $result = $behavior->staticAttributes(null);
+        // Run table map filter once, and an encrypted columns declaration is created
+        $behavior->tableMapFilter($mapFilterInput);
+        $this->assertEquals(trim($mapFilterExpected), trim($mapFilterInput));
 
-        $this->assertTrue($result["encrypted"]);
-        $this->assertEquals("test_value_searchable", $result["encryptedSearchable"]);
-        $this->assertEquals("test_value_sortable", $result["encryptedSortable"]);
+        // Run it twice, and the new column name is inserted beside the old
+        $behavior->tableMapFilter($mapFilterInput);
+        $this->assertEquals(trim($mapFilterExpectedSecond), trim($mapFilterInput));
     }
 
 }

@@ -24,14 +24,35 @@ class EncryptionBehavior extends Behavior {
         'sortable' => false,
     );
 
-    public function staticAttributes($builder) {
+    public function tableMapFilter(&$script) {
         $table = $this->getTable();
+        $aggregateColumn = $table->getColumn($this->getParameter('column_name'));
+        $columnPhpName = $aggregateColumn->getPhpName();
 
-        return $this->renderTemplate('staticAttributes', array(
-            'encrypted' => true,
-            'encryptedSearchable' => $this->getParameter('searchable'),
-            'encryptedSortable' => $this->getParameter('sortable'),
-        ));
+        $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
+
+        // If there is not yet an encrypted column declared in this map...
+        if ($encryptedColumnsDeclarationLocation == False) {
+
+            // Insert after the CLASS_NAME declaration
+            $insertLocation = strpos($script, ";", strpos($script, "const CLASS_NAME")) + 1;
+
+            $insertContent = <<<EOT
+
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    const ENCRYPTED_COLUMNS = '$columnPhpName';
+EOT;
+
+            $script = substr_replace($script, $insertContent, $insertLocation, 0);
+        // If there is already an encrypted column declared in this map...
+        } else {
+            $insertLocation = strpos($script, "'", $encryptedColumnsDeclarationLocation) + 1;
+            $script = substr_replace($script, "$columnPhpName ", $insertLocation, 0);
+        }
+
     }
 
     public function objectFilter(&$script) {
