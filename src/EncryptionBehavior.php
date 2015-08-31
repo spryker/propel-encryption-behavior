@@ -20,7 +20,19 @@ class EncryptionBehavior extends Behavior {
 
     protected $parameters = array(
         'column_name' => null,
+        'searchable' => false,
+        'sortable' => false,
     );
+
+    public function staticAttributes($builder) {
+        $table = $this->getTable();
+
+        return $this->renderTemplate('staticAttributes', array(
+            'encrypted' => true,
+            'encryptedSearchable' => $this->getParameter('searchable'),
+            'encryptedSortable' => $this->getParameter('sortable'),
+        ));
+    }
 
     public function objectFilter(&$script) {
         $table = $this->getTable();

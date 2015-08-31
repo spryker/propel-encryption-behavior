@@ -70,16 +70,22 @@ class MockTable {
 class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
     protected $parameters = array(
         'column_name' => "test_column",
+        'searchable' => "test_value_searchable",
+        'sortable' => "test_value_sortable",
     );
 
     public function getTable() {
         return new MockTable();
     }
+
+    public function renderTemplate($filename, $vars = [], $templateDir = '/templates...') {
+        return $vars;
+    }
 }
 
 
-class BehaviorTest extends PHPUnit_Framework_TestCase
-{
+class BehaviorTest extends PHPUnit_Framework_TestCase {
+
     public function testBehavior() {
         global $input, $expected;
 
@@ -88,6 +94,16 @@ class BehaviorTest extends PHPUnit_Framework_TestCase
         $behavior->objectFilter($input);
 
         $this->assertEquals($expected, $input);
+    }
+
+    public function testStaticAttributes() {
+        $behavior = new MockEncryptionBehavior();
+
+        $result = $behavior->staticAttributes(null);
+
+        $this->assertTrue($result["encrypted"]);
+        $this->assertEquals("test_value_searchable", $result["encryptedSearchable"]);
+        $this->assertEquals("test_value_sortable", $result["encryptedSortable"]);
     }
 
 }
