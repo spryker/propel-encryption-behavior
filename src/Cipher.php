@@ -45,7 +45,7 @@ class Cipher {
 
     }
 
-    protected function decryptStream($encryptedStream) {
+    public function decryptStream($encryptedStream) {
         if (is_null($encryptedStream)) {
             return null;
         } else {
