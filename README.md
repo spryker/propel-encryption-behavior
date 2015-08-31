@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/UWEnrollmentManagement/Encryption.svg)](https://travis-ci.org/UWEnrollmentManagement/Encryption)
 
 UWDOEM/Encryption
 =============
