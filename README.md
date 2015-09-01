@@ -61,7 +61,7 @@ This library is published on packagist. To install using Composer, add the `"uwd
 ```
 {
     "require": {
-        "uwdoem/encryption": "0.1.*"
+        "uwdoem/encryption": ">=0.1"
     }
 }
 ```
