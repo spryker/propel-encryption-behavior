@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jschilz
- * Date: 8/5/2015
- * Time: 8:12 AM
- */
 
 namespace UWDOEM\Encryption;
 
