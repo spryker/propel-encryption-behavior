@@ -2,8 +2,7 @@
 
 use UWDOEM\Encryption\Cipher;
 
-class CipherTest extends PHPUnit_Framework_TestCase
-{
+class CipherTest extends PHPUnit_Framework_TestCase {
 
     static function setUpBeforeClass() {
         Cipher::createInstance("blaksjdfoiuwer");
