@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/UWEnrollmentManagement/Encryption.svg)](https://travis-ci.org/UWEnrollmentManagement/Encryption)
+[![Code Climate](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/badges/gpa.svg)](https://codeclimate.com/github/UWEnrollmentManagement/Encryption)
 
 UWDOEM/Encryption
 =============
