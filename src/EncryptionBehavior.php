@@ -26,7 +26,7 @@ class EncryptionBehavior extends Behavior {
         $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
 
         // If there is not yet an encrypted column declared in this map...
-        if ($encryptedColumnsDeclarationLocation == False) {
+        if ($encryptedColumnsDeclarationLocation === False) {
 
             // Insert after the CLASS_NAME declaration
             $insertLocation = strpos($script, ";", strpos($script, "const CLASS_NAME")) + 1;
