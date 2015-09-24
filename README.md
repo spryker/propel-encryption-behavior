@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/UWEnrollmentManagement/Encryption.svg)](https://travis-ci.org/UWEnrollmentManagement/Encryption)
 [![Code Climate](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/badges/gpa.svg)](https://codeclimate.com/github/UWEnrollmentManagement/Encryption)
 [![Test Coverage](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/badges/coverage.svg)](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/coverage)
+[![Latest Stable Version](https://poser.pugx.org/uwdoem/encryption/v/stable)](https://packagist.org/packages/uwdoem/encryption)
 
 UWDOEM/Encryption
 =============
@@ -122,10 +123,6 @@ Todo
 
 See GitHub [issue tracker](https://github.com/UWEnrollmentManagement/Encryption/issues/).
 
-License
-====
-
-Employees of the University of Washington may use this code in any capacity, without reservation. I MAY release this under a less restrictive license in the future.
 
 Getting Involved
 ================
