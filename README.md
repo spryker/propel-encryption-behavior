@@ -115,7 +115,7 @@ Remember that search/find and sort are now *broken* for `MySecretData` and `MySe
 Compatibility
 =============
 
-* PHP5
+* PHP 5.5, 5.6, 7.0
 * Propel2
 
 Todo
