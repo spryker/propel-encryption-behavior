@@ -4,9 +4,26 @@ use UWDOEM\Encryption\Cipher;
 
 class CipherTest extends PHPUnit_Framework_TestCase {
 
-    static function setUpBeforeClass() {
+    /**
+     * @expectedException              Exception
+     * @expectedExceptionMessageRegExp #called before initialization.*#
+     */
+    public function testGetInstanceBeforeCreate() {
+        Cipher::getInstance();
+    }
+
+    public function testCipherCreation() {
         Cipher::createInstance("blaksjdfoiuwer");
     }
+
+    /**
+     * @expectedException              Exception
+     * @expectedExceptionMessageRegExp #Only one cipher instance may be created.*#
+     */
+    public function testCreateInstanceTwice() {
+        Cipher::createInstance("blaksjdfoiuwer");
+    }
+
     public function testEncrypt() {
         $plainText = "plaintext";
 
