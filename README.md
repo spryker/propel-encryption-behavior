@@ -123,10 +123,6 @@ Todo
 
 See GitHub [issue tracker](https://github.com/UWEnrollmentManagement/Encryption/issues/).
 
-License
-====
-
-Employees of the University of Washington may use this code in any capacity, without reservation. I MAY release this under a less restrictive license in the future.
 
 Getting Involved
 ================
