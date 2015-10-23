@@ -27,7 +27,7 @@ For example:
 
 // Before any database queries:
 
-    use /DOEM/Encryption/Cipher;
+    use UWDOEM\Encryption\Cipher;
     Cipher::createInstance("mysecretpassphrase");
 
 
