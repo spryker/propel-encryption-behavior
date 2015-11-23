@@ -58,7 +58,13 @@ class EncryptionBehavior extends Behavior {
     }
 
     protected function getEncryptedColumnNames() {
-        return [$this->getParameter('column_name')];
+        $encryptedColumnNames = [];
+        foreach ($this->getParameters() as $key => $parameter) {
+            if (strpos($key, "column_name") !== false) {
+                $encryptedColumnNames[] = $parameter;
+            }
+        }
+        return $encryptedColumnNames;
     }
 
     protected function makeEncryptedColumnsDeclaration($columnPhpName) {
