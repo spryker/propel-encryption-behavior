@@ -46,29 +46,15 @@ class EncryptionBehavior extends Behavior {
 
     public function objectFilter(&$script) {
         $table = $this->getTable();
-        $aggregateColumn = $table->getColumn($this->getParameter('column_name'));
-        $columnPhpName = $aggregateColumn->getPhpName();
 
-        // Modify the setter to include encryption
-        $setterLocation = strpos($script, "set$columnPhpName");
+        foreach ($this->getEncryptedColumnNames() as $columnName) {
+            $aggregateColumn = $table->getColumn($columnName);
+            $columnPhpName = $aggregateColumn->getPhpName();
 
-        $start = strpos($script, "(", $setterLocation) + 1;
-        $length = strpos($script, ")", $setterLocation) - $start;
-        $variableName = substr($script, $start, $length);
+            $this->modifySetterWithEncryption($script, $columnPhpName);
+            $this->modifyGetterWithDecryption($script, $columnPhpName);
 
-        $insertionStart = strpos($script, "{", $setterLocation) + 1;
-        $script = substr_replace($script, $this->encryptVariable($variableName), $insertionStart, 0);
-
-        // Modify the getter to include decryption
-        $getterLocation = strpos($script, "get$columnPhpName");
-
-        $start = strpos($script, "return", $getterLocation) + 7;
-        $length = strpos($script, ";", $getterLocation) - $start;
-        $variableName = substr($script, $start, $length);
-
-        $insertionStart = strpos($script, "return", $getterLocation);
-        $insertionLength = strpos($script, ";", $insertionStart) - $insertionStart + 1;
-        $script = substr_replace($script, $this->decryptVariable($variableName), $insertionStart, $insertionLength);
+        }
     }
 
     protected function getEncryptedColumnNames() {
@@ -86,6 +72,17 @@ class EncryptionBehavior extends Behavior {
 EOT;
     }
 
+    protected function modifySetterWithEncryption(&$script, $columnPhpName) {
+        $setterLocation = strpos($script, "set$columnPhpName");
+
+        $start = strpos($script, "(", $setterLocation) + 1;
+        $length = strpos($script, ")", $setterLocation) - $start;
+        $variableName = substr($script, $start, $length);
+
+        $insertionStart = strpos($script, "{", $setterLocation) + 1;
+        $script = substr_replace($script, $this->encryptVariable($variableName), $insertionStart, 0);
+    }
+
     protected function encryptVariable($variableName) {
         return <<<EOT
 
@@ -93,6 +90,18 @@ EOT;
         $variableName = \UWDOEM\Encryption\Cipher::getInstance()->encrypt($variableName);
 
 EOT;
+    }
+
+    protected function modifyGetterWithDecryption(&$script, $columnPhpName) {
+        $getterLocation = strpos($script, "get$columnPhpName");
+
+        $start = strpos($script, "return", $getterLocation) + 7;
+        $length = strpos($script, ";", $getterLocation) - $start;
+        $variableName = substr($script, $start, $length);
+
+        $insertionStart = strpos($script, "return", $getterLocation);
+        $insertionLength = strpos($script, ";", $insertionStart) - $insertionStart + 1;
+        $script = substr_replace($script, $this->decryptVariable($variableName), $insertionStart, $insertionLength);
     }
 
     protected function decryptVariable($variableName) {
