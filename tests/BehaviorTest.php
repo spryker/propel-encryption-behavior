@@ -1,12 +1,12 @@
 <?php
 
 $objectFilterInput = <<<'EOT'
-    public function getTestColumn()
+    public function getVarBinaryColumn1()
     {
         return $this->test_column;
     }
 
-    public function setTestColumn($v)
+    public function setVarBinaryColumn1($v)
     {
         // Because BLOB columns are streams in PDO we have to assume that they are
         // always modified when a new value is passed in.  For example, the contents
@@ -21,17 +21,17 @@ $objectFilterInput = <<<'EOT'
         $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
 
         return $this;
-    } // setTestColumn()
+    } // setVarBinaryColumn1()
 EOT;
 
 $objectFilterExpected = <<<'EOT'
-    public function getTestColumn()
+    public function getVarBinaryColumn1()
     {
         // Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
         $this->test_column = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream($this->test_column);
     }
 
-    public function setTestColumn($v)
+    public function setVarBinaryColumn1($v)
     {
         // Encrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
         $v = \UWDOEM\Encryption\Cipher::getInstance()->encrypt($v);
@@ -49,7 +49,7 @@ $objectFilterExpected = <<<'EOT'
         $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
 
         return $this;
-    } // setTestColumn()
+    } // setVarBinaryColumn1()
 EOT;
 
 $mapFilterInput = <<<EOT
@@ -84,7 +84,7 @@ class ApplicationTableMap extends TableMap
     /**
      * Those columns encrypted by UWDOEM/Encryption
      */
-    const ENCRYPTED_COLUMNS = 'TestColumn';
+    const ENCRYPTED_COLUMNS = 'VarBinaryColumn1';
 
     /**
      * The default database name for this class
@@ -107,7 +107,7 @@ class ApplicationTableMap extends TableMap
     /**
      * Those columns encrypted by UWDOEM/Encryption
      */
-    const ENCRYPTED_COLUMNS = 'TestColumn TestColumn';
+    const ENCRYPTED_COLUMNS = 'VarBinaryColumn1 VarBinaryColumn1';
 
     /**
      * The default database name for this class
@@ -117,25 +117,59 @@ class ApplicationTableMap extends TableMap
 EOT;
 
 
-
 class MockColumn {
+
+    protected $_phpName;
+    protected $_type;
+
+    public function __construct($phpName, $type) {
+        $this->_phpName = $phpName;
+        $this->_type = $type;
+    }
+
     public function getPhpName() {
-        return "TestColumn";
+        return $this->_phpName;
+    }
+    
+    public function getType() {
+        return $this->_type;
     }
 }
 
+$columns = [
+    "VarBinaryColumn1" => new MockColumn("VarBinaryColumn1", "VARBINARY"),
+    "VarBinaryColumn2" => new MockColumn("VarBinaryColumn2", "VARBINARY"),
+    "NotVarBinaryColumn" => new MockColumn("NotVarBinaryColumn", "NOTVARBINARY")
+];
+
 class MockTable {
     public function getColumn($columnName) {
-        if ($columnName == "test_column") {
-            return new MockColumn();
-        }
-        return null;
+        global $columns;
+        return $columns[$columnName];
+    }
+
+    public function getColumnByPhpName($columnName) {
+        global $columns;
+        return $columns[$columnName];
     }
 }
 
 class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
     protected $parameters = array(
-        'column_name' => "test_column",
+        'column_name' => "VarBinaryColumn1",
+        'searchable' => "test_value_searchable",
+        'sortable' => "test_value_sortable",
+    );
+
+    public function getTable() {
+        return new MockTable();
+    }
+
+}
+
+class BadMockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
+    protected $parameters = array(
+        'column_name' => "NotVarBinaryColumn",
         'searchable' => "test_value_searchable",
         'sortable' => "test_value_sortable",
     );
@@ -187,6 +221,18 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
             $this->normalizeWhitespace($mapFilterExpectedSecond),
             $this->normalizeWhitespace($mapFilterInput)
         );
+    }
+
+    /**
+     * @expectedException              Exception
+     * @expectedExceptionMessageRegExp #Encrypted columns must be of type VARBINARY.*#
+     */
+    public function testBehaviorExceptionOnNonVarBinaryColumn() {
+        $behavior = new BadMockEncryptionBehavior();
+
+        // Run table map filter once, and an encrypted columns declaration is created
+        $input = "";
+        $behavior->tableMapFilter($input);
     }
 
 }

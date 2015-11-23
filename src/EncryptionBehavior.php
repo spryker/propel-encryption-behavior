@@ -19,8 +19,10 @@ class EncryptionBehavior extends Behavior {
     );
 
     public function tableMapFilter(&$script) {
+        $phpColumnNames = $this->getEncryptedColumnPhpNames();
+        $this->checkColumnTypes($phpColumnNames);
 
-        foreach ($this->getEncryptedColumnPhpNames() as $columnPhpName) {
+        foreach ($phpColumnNames as $columnPhpName) {
 
             $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
 
@@ -42,8 +44,10 @@ class EncryptionBehavior extends Behavior {
     }
 
     public function objectFilter(&$script) {
+        $phpColumnNames = $this->getEncryptedColumnPhpNames();
+        $this->checkColumnTypes($phpColumnNames);
 
-        foreach ($this->getEncryptedColumnPhpNames() as $columnPhpName) {
+        foreach ($phpColumnNames as $columnPhpName) {
             $this->modifySetterWithEncryption($script, $columnPhpName);
             $this->modifyGetterWithDecryption($script, $columnPhpName);
         }
@@ -60,6 +64,21 @@ class EncryptionBehavior extends Behavior {
             }
         }
         return $encryptedColumnPhpNames;
+    }
+
+    protected function checkColumnTypes($phpColumnNames) {
+        $table = $this->getTable();
+
+        foreach ($phpColumnNames as $phpColumnName) {
+            $column = $table->getColumnByPhpName($phpColumnName);
+
+            if ($column->getType() !== "VARBINARY") {
+                throw new \Exception("Encrypted columns must be of type VARBINARY. " .
+                "Encrypted column '$phpColumnName' of type '{$column->getType()}' found. " .
+                "Revise your schema.");
+            }
+        }
+
     }
 
     protected function makeEncryptedColumnsDeclaration($columnPhpName) {
