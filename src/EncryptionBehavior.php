@@ -19,11 +19,8 @@ class EncryptionBehavior extends Behavior {
     );
 
     public function tableMapFilter(&$script) {
-        $table = $this->getTable();
 
-        foreach ($this->getEncryptedColumnNames() as $columnName) {
-            $column = $table->getColumn($columnName);
-            $columnPhpName = $column->getPhpName();
+        foreach ($this->getEncryptedColumnPhpNames() as $columnPhpName) {
 
             $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
 
@@ -45,26 +42,24 @@ class EncryptionBehavior extends Behavior {
     }
 
     public function objectFilter(&$script) {
-        $table = $this->getTable();
 
-        foreach ($this->getEncryptedColumnNames() as $columnName) {
-            $aggregateColumn = $table->getColumn($columnName);
-            $columnPhpName = $aggregateColumn->getPhpName();
-
+        foreach ($this->getEncryptedColumnPhpNames() as $columnPhpName) {
             $this->modifySetterWithEncryption($script, $columnPhpName);
             $this->modifyGetterWithDecryption($script, $columnPhpName);
-
         }
     }
 
-    protected function getEncryptedColumnNames() {
-        $encryptedColumnNames = [];
-        foreach ($this->getParameters() as $key => $parameter) {
-            if (strpos($key, "column_name") !== false) {
-                $encryptedColumnNames[] = $parameter;
+    protected function getEncryptedColumnPhpNames() {
+        $table = $this->getTable();
+
+        $encryptedColumnPhpNames = [];
+        foreach ($this->getParameters() as $key => $columnName) {
+            if (strpos($key, "column_name") !== false && $columnName) {
+                $column = $table->getColumn($columnName);
+                $encryptedColumnPhpNames[] = $column->getPhpName();
             }
         }
-        return $encryptedColumnNames;
+        return $encryptedColumnPhpNames;
     }
 
     protected function makeEncryptedColumnsDeclaration($columnPhpName) {

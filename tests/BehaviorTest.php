@@ -149,6 +149,13 @@ class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
 
 class BehaviorTest extends PHPUnit_Framework_TestCase {
 
+    protected function normalizeWhitespace($string) {
+        $string = trim($string);
+        $string = str_replace("\r", "", $string);
+
+        return $string;
+    }
+
     public function testObjectFilter() {
         global $objectFilterInput, $objectFilterExpected;
 
@@ -156,7 +163,10 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
 
         $behavior->objectFilter($objectFilterInput);
 
-        $this->assertEquals($objectFilterExpected, $objectFilterInput);
+        $this->assertEquals(
+            $this->normalizeWhitespace($objectFilterExpected),
+            $this->normalizeWhitespace($objectFilterInput)
+        );
     }
 
     public function testMapFilter() {
@@ -166,11 +176,17 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
 
         // Run table map filter once, and an encrypted columns declaration is created
         $behavior->tableMapFilter($mapFilterInput);
-        $this->assertEquals(trim($mapFilterExpected), trim($mapFilterInput));
+        $this->assertEquals(
+            $this->normalizeWhitespace($mapFilterExpected),
+            $this->normalizeWhitespace($mapFilterInput)
+        );
 
         // Run it twice, and the new column name is inserted beside the old
         $behavior->tableMapFilter($mapFilterInput);
-        $this->assertEquals(trim($mapFilterExpectedSecond), trim($mapFilterInput));
+        $this->assertEquals(
+            $this->normalizeWhitespace($mapFilterExpectedSecond),
+            $this->normalizeWhitespace($mapFilterInput)
+        );
     }
 
 }
