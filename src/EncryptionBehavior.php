@@ -20,31 +20,26 @@ class EncryptionBehavior extends Behavior {
 
     public function tableMapFilter(&$script) {
         $table = $this->getTable();
-        $aggregateColumn = $table->getColumn($this->getParameter('column_name'));
-        $columnPhpName = $aggregateColumn->getPhpName();
 
-        $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
+        foreach ($this->getEncryptedColumnNames() as $columnName) {
+            $column = $table->getColumn($columnName);
+            $columnPhpName = $column->getPhpName();
 
-        // If there is not yet an encrypted column declared in this map...
-        if ($encryptedColumnsDeclarationLocation === False) {
+            $encryptedColumnsDeclarationLocation = strpos($script, "ENCRYPTED_COLUMNS");
 
-            // Insert after the CLASS_NAME declaration
-            $insertLocation = strpos($script, ";", strpos($script, "const CLASS_NAME")) + 1;
+            if ($encryptedColumnsDeclarationLocation === False) {
+                // If there is not yet an encrypted column declared in this map...
 
-            $insertContent = <<<EOT
+                // Insert after the CLASS_NAME declaration
+                $insertLocation = strpos($script, ";", strpos($script, "const CLASS_NAME")) + 1;
+                $insertContent = $this->makeEncryptedColumnsDeclaration($columnPhpName);
 
-
-    /**
-     * Those columns encrypted by UWDOEM/Encryption
-     */
-    const ENCRYPTED_COLUMNS = '$columnPhpName';
-EOT;
-
+            } else {
+                // If there is already an encrypted column declared in this map...
+                $insertLocation = strpos($script, "'", $encryptedColumnsDeclarationLocation) + 1;
+                $insertContent = "$columnPhpName ";
+            }
             $script = substr_replace($script, $insertContent, $insertLocation, 0);
-        // If there is already an encrypted column declared in this map...
-        } else {
-            $insertLocation = strpos($script, "'", $encryptedColumnsDeclarationLocation) + 1;
-            $script = substr_replace($script, "$columnPhpName ", $insertLocation, 0);
         }
 
     }
@@ -74,6 +69,21 @@ EOT;
         $insertionStart = strpos($script, "return", $getterLocation);
         $insertionLength = strpos($script, ";", $insertionStart) - $insertionStart + 1;
         $script = substr_replace($script, $this->decryptVariable($variableName), $insertionStart, $insertionLength);
+    }
+
+    protected function getEncryptedColumnNames() {
+        return [$this->getParameter('column_name')];
+    }
+
+    protected function makeEncryptedColumnsDeclaration($columnPhpName) {
+        return <<<EOT
+
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    const ENCRYPTED_COLUMNS = '$columnPhpName';
+EOT;
     }
 
     protected function encryptVariable($variableName) {
