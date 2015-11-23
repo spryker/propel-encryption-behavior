@@ -19,8 +19,8 @@ For example:
         <column name="my_data" type="varchar" size="255" />
         <column name="my_secret_data" type="varbinary" size="255" />
 
-        <behavior name="encryption" id="encrypt_my_secret_data">
-            <parameter name="column_name" value="my_secret_data" />
+        <behavior name="encryption">
+            <parameter name="column_name_1" value="my_secret_data" />
         </behavior>
     </table>
 
@@ -76,7 +76,7 @@ Use
 
 This client library provides a `Cipher` class and one Propel2 Behavior class.
 
-To designate a field as encrypted in your Propel schema, set its type as `varbinary` and include the `encryption` behavior. You may include multiple `encryption` behaviors for multiple encrypted fields:
+To designate a field as encrypted in your Propel schema, set its type as `varbinary` and include the `encryption` behavior. You may include multiple columns in the `encryption` behavior:
 
 ```
     <table name="my_class">
@@ -87,12 +87,10 @@ To designate a field as encrypted in your Propel schema, set its type as `varbin
         <column name="my_secret_data" type="varbinary" size="255" />
         <column name="my_secret_data2" type="varbinary" size="255" />
 
-        <behavior name="encryption" id="encrypt_my_secret_data">
-            <parameter name="column_name" value="my_secret_data" />
+        <behavior name="encryption">
+            <parameter name="column_name_1" value="my_secret_data" />
+            <parameter name="column_name_2" value="my_secret_data2" />
         </behavior>
-        <behavior name="encryption" id="encrypt_my_secret_data2">
-                    <parameter name="column_name" value="my_secret_data2" />
-                </behavior>
     </table>
 ```
 
