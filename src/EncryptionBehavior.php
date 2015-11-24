@@ -127,7 +127,11 @@ EOT;
     protected function decryptVariable($variableName) {
         return <<<EOT
 // Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
-        $variableName = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream($variableName);
+        \$fieldValue = $variableName;
+        if (is_resource(\$fieldValue) && get_resource_type(\$fieldValue) === "stream") {
+            \$fieldValue = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream(\$fieldValue);
+        }
+        return \$fieldValue;
 EOT;
     }
 

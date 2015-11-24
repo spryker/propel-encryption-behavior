@@ -28,7 +28,11 @@ $objectFilterExpected = <<<'EOT'
     public function getVarBinaryColumn1()
     {
         // Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
-        $this->test_column = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream($this->test_column);
+        $fieldValue = $this->test_column;
+        if (is_resource($fieldValue) && get_resource_type($fieldValue) === "stream") {
+            $fieldValue = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream($fieldValue);
+        }
+        return $fieldValue;
     }
 
     public function setVarBinaryColumn1($v)
