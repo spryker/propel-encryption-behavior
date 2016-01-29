@@ -6,6 +6,11 @@
       "src/"
     ]
   },
+  "autoload-dev": {
+    "classmap": [
+      "test/"
+    ]
+  },
   "require": {
     "propel/propel": "~2.0@dev"
   },

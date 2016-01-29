@@ -45,7 +45,13 @@ class Cipher
     public function decrypt($encryptedMessage)
     {
         $iv = substr($encryptedMessage, 0, self::IV_SIZE);
-        return openssl_decrypt(substr($encryptedMessage, self::IV_SIZE), self::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
+        return openssl_decrypt(
+            substr($encryptedMessage, self::IV_SIZE),
+            self::ENCRYPTION_METHOD,
+            $this->passphrase,
+            0,
+            $iv
+        );
 
     }
 
@@ -60,7 +66,8 @@ class Cipher
 
     /**
      * @param string $passphrase The passphrase to be used to encrypt/decrypt data
-     * @throws \Exception if you attempt to initialize the cipher more than one time in a page-load via ::createInstance
+     * @throws \Exception if you attempt to initialize the cipher more than one time
+     *                    in a page-load via ::createInstance
      */
     public static function createInstance($passphrase)
     {

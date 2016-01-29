@@ -1,5 +1,9 @@
 <?php
 
+namespace UWDOEM\Encryption\Test;
+
+use PHPUnit_Framework_TestCase;
+
 use UWDOEM\Encryption\Cipher;
 
 class CipherTest extends PHPUnit_Framework_TestCase

@@ -218,8 +218,11 @@ EOT;
     {
         $insertContent = "\n            '$realColumnName', ";
 
-        $insertLocation = strpos($script, '$encryptedSearchableColumns = array(') + strlen('$encryptedSearchableColumns = array(');
-        $script = substr_replace($script, $insertContent, $insertLocation, 0);
+        $insertLocation = strpos(
+            $script,
+            '$encryptedSearchableColumns = array('
+        ) + strlen('$encryptedSearchableColumns = array(');
+                $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
     protected function addEncryptionToSetter(&$script, $columnPhpName)
