@@ -4,19 +4,35 @@ namespace UWDOEM\Encryption;
 
 use Propel\Generator\Model\Behavior;
 
+/**
+ * Class EncryptionBehavior
+ *
+ * @package UWDOEM\Encryption
+ */
 class EncryptionBehavior extends Behavior
 {
 
+    /** @var array */
     protected $parameters = [
         'searchable' => false
     ];
 
-    // Multiple encrypted columns in the same table is OK.
+    /**
+     * Multiple encrypted columns in the same table is OK.
+     *
+     * @return boolean
+     */
     public function allowMultiple()
     {
         return true;
     }
 
+    /**
+     * @param string $script
+     * @return void
+     * @throws \Exception If the schema specifies encryption on fields which are not
+     *                    VARBINARY.
+     */
     public function tableMapFilter(&$script)
     {
         $table = $this->getTable();
@@ -42,12 +58,16 @@ class EncryptionBehavior extends Behavior
         foreach ($this->getColumnRealNames() as $realColumnName) {
             static::insertEncryptedColumnName($script, $realColumnName);
 
-            if ($this->isSearchable()) {
+            if ($this->isSearchable() === true) {
                 static::insertSearchableEncryptedColumnName($script, $realColumnName);
             }
         }
     }
 
+    /**
+     * @param string $script
+     * @return void
+     */
     public function objectFilter(&$script)
     {
         $phpColumnNames = $this->getColumnPhpNames();
@@ -58,6 +78,10 @@ class EncryptionBehavior extends Behavior
         }
     }
 
+    /**
+     * @param string $script
+     * @return void
+     */
     public function queryFilter(&$script)
     {
         if (strpos($script, "addUsingOperator") !== false) {
@@ -106,18 +130,23 @@ EOT;
         );
     }
 
-
+    /**
+     * @return string[]
+     */
     protected function getColumnNames()
     {
         $columnNames = [];
         foreach ($this->getParameters() as $key => $columnName) {
-            if (strpos($key, "column_name") !== false && $columnName) {
+            if (strpos($key, "column_name") !== false && $columnName !== "") {
                 $columnNames[] = $columnName;
             }
         }
         return $columnNames;
     }
 
+    /**
+     * @return string[]
+     */
     protected function getColumnPhpNames()
     {
         $table = $this->getTable();
@@ -130,6 +159,9 @@ EOT;
         );
     }
 
+    /**
+     * @return string[]
+     */
     protected function getColumnRealNames()
     {
         $tableName = $this->getTable()->getName();
@@ -142,16 +174,27 @@ EOT;
         );
     }
 
+    /**
+     * @return boolean
+     */
     protected function isSearchable()
     {
         return $this->getParameter('searchable');
     }
 
+    /**
+     * @param string $script
+     * @return boolean
+     */
     protected static function encryptedColumnsDeclarationExists($script)
     {
         return strpos($script, 'protected static $encryptedColumns') !== false;
     }
 
+    /**
+     * @param string $script
+     * @return void
+     */
     protected static function insertEncryptedColumnNameAccessMethods(&$script)
     {
         $useString = <<<'EOT'
@@ -184,6 +227,11 @@ EOT;
 
     }
 
+    /**
+     * @param string  $script
+     * @param integer $position
+     * @return void
+     */
     protected static function insertEncryptedColumnsDeclaration(&$script, $position)
     {
 
@@ -206,6 +254,11 @@ EOT;
         $script = substr_replace($script, $content, $position, 0);
     }
 
+    /**
+     * @param string $script
+     * @param string $realColumnName
+     * @return void
+     */
     public static function insertEncryptedColumnName(&$script, $realColumnName)
     {
         $insertContent = "\n            '$realColumnName', ";
@@ -214,6 +267,11 @@ EOT;
         $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
+    /**
+     * @param string $script
+     * @param string $realColumnName
+     * @return void
+     */
     public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
     {
         $insertContent = "\n            '$realColumnName', ";
@@ -225,6 +283,11 @@ EOT;
                 $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
+    /**
+     * @param string $script
+     * @param string $columnPhpName
+     * @return void
+     */
     protected function addEncryptionToSetter(&$script, $columnPhpName)
     {
         $setterLocation = strpos($script, "set$columnPhpName");
@@ -245,6 +308,11 @@ EOT;
         $script = substr_replace($script, $content, $insertionStart, 0);
     }
 
+    /**
+     * @param string $script
+     * @param string $columnPhpName
+     * @return void
+     */
     protected function addDecryptionToGetter(&$script, $columnPhpName)
     {
         $getterLocation = strpos($script, "get$columnPhpName");

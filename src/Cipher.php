@@ -13,12 +13,18 @@ class Cipher
 {
 
     const IV_SIZE = 16;
+
     const ENCRYPTION_METHOD = "aes-256-cbc";
 
+    /** @var Cipher */
     protected static $instance;
 
+    /** @var string */
     protected $passphrase;
 
+    /**
+     * @param string $passphrase
+     */
     protected function __construct($passphrase)
     {
         $this->passphrase = $passphrase;
@@ -27,8 +33,8 @@ class Cipher
     /**
      * Converts a plain-text string into an encrypted string
      *
-     * @param string $string plain-text to encrypt
-     * @return string the encrypted string
+     * @param string $string Plain-text to encrypt.
+     * @return string The encrypted string.
      */
     public function encrypt($string)
     {
@@ -39,8 +45,8 @@ class Cipher
     /**
      * Converts an encrypted string into a plain-text string
      *
-     * @param string $encryptedMessage the encrypted string
-     * @return string the plaint-text string
+     * @param string $encryptedMessage The encrypted string.
+     * @return string The plaint-text string.
      */
     public function decrypt($encryptedMessage)
     {
@@ -55,9 +61,13 @@ class Cipher
 
     }
 
+    /**
+     * @param resource $encryptedStream
+     * @return null|string
+     */
     public function decryptStream($encryptedStream)
     {
-        if (is_null($encryptedStream)) {
+        if ($encryptedStream === null) {
             return null;
         } else {
             return self::decrypt(stream_get_contents($encryptedStream, -1, 0));
@@ -65,13 +75,14 @@ class Cipher
     }
 
     /**
-     * @param string $passphrase The passphrase to be used to encrypt/decrypt data
-     * @throws \Exception if you attempt to initialize the cipher more than one time
-     *                    in a page-load via ::createInstance
+     * @param string $passphrase The passphrase to be used to encrypt/decrypt data.
+     * @return void
+     * @throws \Exception If you attempt to initialize the cipher more than one time
+     *                    in a page-load via ::createInstance.
      */
     public static function createInstance($passphrase)
     {
-        if (!empty(self::$instance)) {
+        if (self::$instance !== null) {
             throw new \Exception(
                 'Cipher::createInstance() called more than once. ' .
                 'Only one cipher instance may be created. '
@@ -82,11 +93,11 @@ class Cipher
 
     /**
      * @return Cipher
-     * @throws \Exception if ::getInstance is called before cipher is initialized via ::createInstance
+     * @throws \Exception If ::getInstance is called before cipher is initialized via ::createInstance.
      */
     public static function getInstance()
     {
-        if (empty(self::$instance)) {
+        if (self::$instance === null) {
             throw new \Exception(
                 'Cipher::getInstance() called before initialization. ' .
                 'Call Cipher::createInstance($passphrase) before ::getInstance().'
