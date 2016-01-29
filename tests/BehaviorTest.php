@@ -74,10 +74,23 @@ class ApplicationTableMap extends TableMap
 
 EOT;
 
-$mapFilterExpected = <<<EOT
+$mapFilterExpected = <<<'EOT'
 class ApplicationTableMap extends TableMap
 {
     use InstancePoolTrait;
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    protected static $encryptedColumns = array(
+            'table_name.VarBinaryColumn1',
+        );
+
+    /**
+     * Those columns encrypted deterministically by UWDOEM/Encryption
+     */
+    protected static $encryptedSearchableColumns = array(
+        );
     use TableMapTrait;
 
     /**
@@ -86,21 +99,47 @@ class ApplicationTableMap extends TableMap
     const CLASS_NAME = 'scholarshipApplication.Map.ApplicationTableMap';
 
     /**
-     * Those columns encrypted by UWDOEM/Encryption
-     */
-    const ENCRYPTED_COLUMNS = 'VarBinaryColumn1';
-
-    /**
      * The default database name for this class
      */
     const DATABASE_NAME = 'scholarship_application';
+    /**
+     * @param $columnName
+     * @return boolean
+     */
+    public static function isEncryptedColumnName($columnName)
+    {
+        return array_search($columnName, static::$encryptedColumns) !== false;
+    }
+
+    /**
+     * @param $columnName
+     * @return boolean
+     */
+    public static function isEncryptedSearchableColumnName($columnName)
+    {
+        return array_search($columnName, static::$encryptedSearchableColumns) !== false;
+    }
 
 EOT;
 
-$mapFilterExpectedSecond = <<<EOT
+$mapFilterExpectedSecond = <<<'EOT'
 class ApplicationTableMap extends TableMap
 {
     use InstancePoolTrait;
+
+    /**
+     * Those columns encrypted by UWDOEM/Encryption
+     */
+    protected static $encryptedColumns = array(
+            'table_name.VarBinaryColumn1',
+            'table_name.VarBinaryColumn1',
+        );
+
+    /**
+     * Those columns encrypted deterministically by UWDOEM/Encryption
+     */
+    protected static $encryptedSearchableColumns = array(
+        );
     use TableMapTrait;
 
     /**
@@ -109,14 +148,26 @@ class ApplicationTableMap extends TableMap
     const CLASS_NAME = 'scholarshipApplication.Map.ApplicationTableMap';
 
     /**
-     * Those columns encrypted by UWDOEM/Encryption
-     */
-    const ENCRYPTED_COLUMNS = 'VarBinaryColumn1 VarBinaryColumn1';
-
-    /**
      * The default database name for this class
      */
     const DATABASE_NAME = 'scholarship_application';
+    /**
+     * @param $columnName
+     * @return boolean
+     */
+    public static function isEncryptedColumnName($columnName)
+    {
+        return array_search($columnName, static::$encryptedColumns) !== false;
+    }
+
+    /**
+     * @param $columnName
+     * @return boolean
+     */
+    public static function isEncryptedSearchableColumnName($columnName)
+    {
+        return array_search($columnName, static::$encryptedSearchableColumns) !== false;
+    }
 
 EOT;
 
@@ -138,6 +189,10 @@ class MockColumn {
     public function getType() {
         return $this->_type;
     }
+
+    public function getName() {
+        return $this->_phpName;
+    }
 }
 
 $columns = [
@@ -156,13 +211,21 @@ class MockTable {
         global $columns;
         return $columns[$columnName];
     }
+
+    public function getColumns() {
+        global $columns;
+        return $columns;
+    }
+
+    public function getName() {
+        return "table_name";
+    }
 }
 
 class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
     protected $parameters = array(
         'column_name' => "VarBinaryColumn1",
-        'searchable' => "test_value_searchable",
-        'sortable' => "test_value_sortable",
+        'searchable' => false,
     );
 
     public function getTable() {
@@ -174,8 +237,7 @@ class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
 class BadMockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
     protected $parameters = array(
         'column_name' => "NotVarBinaryColumn",
-        'searchable' => "test_value_searchable",
-        'sortable' => "test_value_sortable",
+        'searchable' => "searchable",
     );
 
     public function getTable() {
@@ -190,6 +252,8 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
     protected function normalizeWhitespace($string) {
         $string = trim($string);
         $string = str_replace("\r", "", $string);
+
+        $string = join("\n", array_map("rtrim", explode("\n", $string)));
 
         return $string;
     }
