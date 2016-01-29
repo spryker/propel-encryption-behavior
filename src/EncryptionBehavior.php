@@ -4,8 +4,8 @@ namespace UWDOEM\Encryption;
 
 use Propel\Generator\Model\Behavior;
 
-
-class EncryptionBehavior extends Behavior {
+class EncryptionBehavior extends Behavior
+{
 
     protected $parameters = [
         'searchable' => false
@@ -123,7 +123,7 @@ EOT;
         $table = $this->getTable();
 
         return array_map(
-            function($columnName) use ($table) {
+            function ($columnName) use ($table) {
                 return $table->getColumn($columnName)->getPhpName();
             },
             $this->getColumnNames()
@@ -135,7 +135,7 @@ EOT;
         $tableName = $this->getTable()->getName();
 
         return array_map(
-            function($columnName) use ($tableName) {
+            function ($columnName) use ($tableName) {
                 return "$tableName.$columnName";
             },
             $this->getColumnNames()
@@ -206,14 +206,16 @@ EOT;
         $script = substr_replace($script, $content, $position, 0);
     }
 
-    public static function insertEncryptedColumnName(&$script, $realColumnName) {
+    public static function insertEncryptedColumnName(&$script, $realColumnName)
+    {
         $insertContent = "\n            '$realColumnName', ";
 
         $insertLocation = strpos($script, '$encryptedColumns = array(') + strlen('$encryptedColumns = array(');
         $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
-    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName) {
+    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
+    {
         $insertContent = "\n            '$realColumnName', ";
 
         $insertLocation = strpos($script, '$encryptedSearchableColumns = array(') + strlen('$encryptedSearchableColumns = array(');
@@ -263,5 +265,4 @@ EOT;
 
         $script = substr_replace($script, $content, $insertionStart, $insertionLength);
     }
-
 }

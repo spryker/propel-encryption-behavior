@@ -172,25 +172,30 @@ class ApplicationTableMap extends TableMap
 EOT;
 
 
-class MockColumn {
+class MockColumn
+{
 
     protected $_phpName;
     protected $_type;
 
-    public function __construct($phpName, $type) {
+    public function __construct($phpName, $type)
+    {
         $this->_phpName = $phpName;
         $this->_type = $type;
     }
 
-    public function getPhpName() {
+    public function getPhpName()
+    {
         return $this->_phpName;
     }
     
-    public function getType() {
+    public function getType()
+    {
         return $this->_type;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->_phpName;
     }
 }
@@ -201,55 +206,64 @@ $columns = [
     "NotVarBinaryColumn" => new MockColumn("NotVarBinaryColumn", "NOTVARBINARY")
 ];
 
-class MockTable {
-    public function getColumn($columnName) {
+class MockTable
+{
+    public function getColumn($columnName)
+    {
         global $columns;
         return $columns[$columnName];
     }
 
-    public function getColumnByPhpName($columnName) {
+    public function getColumnByPhpName($columnName)
+    {
         global $columns;
         return $columns[$columnName];
     }
 
-    public function getColumns() {
+    public function getColumns()
+    {
         global $columns;
         return $columns;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return "table_name";
     }
 }
 
-class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
+class MockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior
+{
     protected $parameters = array(
         'column_name' => "VarBinaryColumn1",
         'searchable' => false,
     );
 
-    public function getTable() {
+    public function getTable()
+    {
         return new MockTable();
     }
-
 }
 
-class BadMockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior {
+class BadMockEncryptionBehavior extends \UWDOEM\Encryption\EncryptionBehavior
+{
     protected $parameters = array(
         'column_name' => "NotVarBinaryColumn",
         'searchable' => "searchable",
     );
 
-    public function getTable() {
+    public function getTable()
+    {
         return new MockTable();
     }
-
 }
 
 
-class BehaviorTest extends PHPUnit_Framework_TestCase {
+class BehaviorTest extends PHPUnit_Framework_TestCase
+{
 
-    protected function normalizeWhitespace($string) {
+    protected function normalizeWhitespace($string)
+    {
         $string = trim($string);
         $string = str_replace("\r", "", $string);
 
@@ -258,7 +272,8 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
         return $string;
     }
 
-    public function testObjectFilter() {
+    public function testObjectFilter()
+    {
         global $objectFilterInput, $objectFilterExpected;
 
         $behavior = new MockEncryptionBehavior();
@@ -271,7 +286,8 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testMapFilter() {
+    public function testMapFilter()
+    {
         global $mapFilterInput, $mapFilterExpected, $mapFilterExpectedSecond;
 
         $behavior = new MockEncryptionBehavior();
@@ -295,12 +311,12 @@ class BehaviorTest extends PHPUnit_Framework_TestCase {
      * @expectedException              Exception
      * @expectedExceptionMessageRegExp #Encrypted columns must be of type VARBINARY.*#
      */
-    public function testBehaviorExceptionOnNonVarBinaryColumn() {
+    public function testBehaviorExceptionOnNonVarBinaryColumn()
+    {
         $behavior = new BadMockEncryptionBehavior();
 
         // Run table map filter once, and an encrypted columns declaration is created
         $input = "";
         $behavior->tableMapFilter($input);
     }
-
 }
