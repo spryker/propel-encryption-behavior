@@ -108,12 +108,15 @@ class EncryptionBehavior extends Behavior
         $isEncryptedSearchableColumn =  $tableMap->isEncryptedSearchableColumnName($columnName);
 
         if ($isEncryptedColumn) {
-            if (
-                $isCriterion
-                || !$isEncryptedSearchableColumn
-                || ($operator !== null && $operator !== Criteria::EQUAL && $operator !== Criteria::NOT_EQUAL)
-            ) {
+            if ($isCriterion) {
                 throw new \Exception("The column $columnName is encrypted, and does not support this form of query.");
+            } elseif (!$isEncryptedSearchableColumn) {
+                throw new \Exception("The column $columnName is encrypted, and does not support searching.");
+            } elseif ($operator !== null && $operator !== Criteria::EQUAL && $operator !== Criteria::NOT_EQUAL) {
+                throw new \Exception(
+                    "The column $columnName is encrypted, and only supports searching on EQUAL or NOT_EQUAL criteria."
+                );
+            }
             } else {
                 $value = \UWDOEM\Encryption\Cipher::getInstance()->deterministicEncrypt((string)$value);
             }
