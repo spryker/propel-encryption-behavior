@@ -1,5 +1,5 @@
 {
-  "name": "uwdoem/encryption",
+  "name": "athens/encryption",
   "description": "Propel Behavior for seamless encryption/decryption of data columns",
   "autoload": {
     "classmap": [
@@ -23,6 +23,6 @@
   "type" : "propel-behavior",
   "extra": {
     "name": "encryption",
-    "class": "\\UWDOEM\\Encryption\\EncryptionBehavior"
+    "class": "\\Athens\\Encryption\\EncryptionBehavior"
   }
 }
