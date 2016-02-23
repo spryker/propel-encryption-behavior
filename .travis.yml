@@ -5,7 +5,7 @@ php:
   - 7.0
 addons:
   code_climate:
-    repo_token: 9d6a84f7ca4f0a4a7db8d015908d8c9267fb04802a9f9d8a64531d46ff501564
+    repo_token: d2e633c11ce9b2f6cdd21d775d295c9836064eaebe96590c2cb3b2370f893555
 before_script:
   - sed -i '/phpdoc/d' composer.json
   - composer install
