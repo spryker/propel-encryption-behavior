@@ -6,7 +6,7 @@
  * Time: 2:55 PM
  */
 
-namespace UWDOEM\Encryption\Test\Mock;
+namespace Athens\Encryption\Test\Mock;
 
 class MockColumn
 {

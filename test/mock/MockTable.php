@@ -1,6 +1,6 @@
 <?php
 
-namespace UWDOEM\Encryption\Test\Mock;
+namespace Athens\Encryption\Test\Mock;
 
 class MockTable
 {

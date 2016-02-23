@@ -1,11 +1,11 @@
 <?php
 
-namespace UWDOEM\Encryption\Test;
+namespace Athens\Encryption\Test;
 
 use PHPUnit_Framework_TestCase;
 
-use UWDOEM\Encryption\Test\Mock\MockColumn;
-use UWDOEM\Encryption\Test\Mock\MockEncryptionBehavior;
+use Athens\Encryption\Test\Mock\MockColumn;
+use Athens\Encryption\Test\Mock\MockEncryptionBehavior;
 
 class BehaviorTest extends PHPUnit_Framework_TestCase
 {
@@ -122,18 +122,18 @@ EOT;
     protected $objectFilterExpected = <<<'EOT'
     public function getVarBinaryColumn1()
     {
-        // Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
+        // Decrypt the variable, per \Athens\Encryption\EncryptionBehavior.
         $fieldValue = $this->test_column;
         if (is_resource($fieldValue) && get_resource_type($fieldValue) === "stream") {
-            $fieldValue = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream($fieldValue);
+            $fieldValue = \Athens\Encryption\Cipher::getInstance()->decryptStream($fieldValue);
         }
         return $fieldValue;
     }
 
     public function setVarBinaryColumn1($v)
     {
-        // Encrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
-        $v = \UWDOEM\Encryption\Cipher::getInstance()->encrypt($v);
+        // Encrypt the variable, per \Athens\Encryption\EncryptionBehavior.
+        $v = \Athens\Encryption\Cipher::getInstance()->encrypt($v);
 
         // Because BLOB columns are streams in PDO we have to assume that they are
         // always modified when a new value is passed in.  For example, the contents
@@ -175,14 +175,14 @@ class ApplicationTableMap extends TableMap
     use InstancePoolTrait;
 
     /**
-     * Those columns encrypted by UWDOEM/Encryption
+     * Those columns encrypted by Athens/Encryption
      */
     protected static $encryptedColumns = array(
             'table_name.VarBinaryColumn1',
         );
 
     /**
-     * Those columns encrypted deterministically by UWDOEM/Encryption
+     * Those columns encrypted deterministically by Athens/Encryption
      */
     protected static $encryptedSearchableColumns = array(
         );
@@ -223,7 +223,7 @@ class ApplicationTableMap extends TableMap
     use InstancePoolTrait;
 
     /**
-     * Those columns encrypted by UWDOEM/Encryption
+     * Those columns encrypted by Athens/Encryption
      */
     protected static $encryptedColumns = array(
             'table_name.VarBinaryColumn1',
@@ -231,7 +231,7 @@ class ApplicationTableMap extends TableMap
         );
 
     /**
-     * Those columns encrypted deterministically by UWDOEM/Encryption
+     * Those columns encrypted deterministically by Athens/Encryption
      */
     protected static $encryptedSearchableColumns = array(
         );

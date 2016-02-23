@@ -1,13 +1,13 @@
 <?php
 
-namespace UWDOEM\Encryption;
+namespace Athens\Encryption;
 
 /**
  * Class Cipher
  *
  * Singleton class encapsulating encryption/decryption of data fields
  *
- * @package UWDOEM\Encryption
+ * @package Athens\Encryption
  */
 class Cipher
 {

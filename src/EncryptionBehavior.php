@@ -1,13 +1,13 @@
 <?php
 
-namespace UWDOEM\Encryption;
+namespace Athens\Encryption;
 
 use Propel\Generator\Model\Behavior;
 
 /**
  * Class EncryptionBehavior
  *
- * @package UWDOEM\Encryption
+ * @package Athens\Encryption
  */
 class EncryptionBehavior extends Behavior
 {
@@ -118,7 +118,7 @@ class EncryptionBehavior extends Behavior
                 );
             }
             } else {
-                $value = \UWDOEM\Encryption\Cipher::getInstance()->deterministicEncrypt((string)$value);
+                $value = \Athens\Encryption\Cipher::getInstance()->deterministicEncrypt((string)$value);
             }
         }
 
@@ -242,13 +242,13 @@ EOT;
 
 
     /**
-     * Those columns encrypted by UWDOEM/Encryption
+     * Those columns encrypted by Athens/Encryption
      */
     protected static $encryptedColumns = array(
         );
 
     /**
-     * Those columns encrypted deterministically by UWDOEM/Encryption
+     * Those columns encrypted deterministically by Athens/Encryption
      */
     protected static $encryptedSearchableColumns = array(
         );
@@ -302,8 +302,8 @@ EOT;
         $encryptionMethod = $this->isSearchable() ? "deterministicEncrypt" : "encrypt";
         $content = <<<EOT
 
-        // Encrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
-        $variableName = \UWDOEM\Encryption\Cipher::getInstance()->$encryptionMethod($variableName);
+        // Encrypt the variable, per \Athens\Encryption\EncryptionBehavior.
+        $variableName = \Athens\Encryption\Cipher::getInstance()->$encryptionMethod($variableName);
 
 EOT;
 
@@ -329,10 +329,10 @@ EOT;
 
 
         $content = <<<EOT
-// Decrypt the variable, per \UWDOEM\Encryption\EncryptionBehavior.
+// Decrypt the variable, per \Athens\Encryption\EncryptionBehavior.
         \$fieldValue = $variableName;
         if (is_resource(\$fieldValue) && get_resource_type(\$fieldValue) === "stream") {
-            \$fieldValue = \UWDOEM\Encryption\Cipher::getInstance()->decryptStream(\$fieldValue);
+            \$fieldValue = \Athens\Encryption\Cipher::getInstance()->decryptStream(\$fieldValue);
         }
         return \$fieldValue;
 EOT;

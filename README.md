@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/UWEnrollmentManagement/Encryption.svg)](https://travis-ci.org/UWEnrollmentManagement/Encryption)
-[![Code Climate](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/badges/gpa.svg)](https://codeclimate.com/github/UWEnrollmentManagement/Encryption)
-[![Test Coverage](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/badges/coverage.svg)](https://codeclimate.com/github/UWEnrollmentManagement/Encryption/coverage)
-[![Latest Stable Version](https://poser.pugx.org/uwdoem/encryption/v/stable)](https://packagist.org/packages/uwdoem/encryption)
+[![Build Status](https://travis-ci.org/AthensFramework/encryption.svg)](https://travis-ci.org/AthensFramework/encryption)
+[![Code Climate](https://codeclimate.com/github/AthensFramework/encryption/badges/gpa.svg)](https://codeclimate.com/github/AthensFramework/encryption)
+[![Test Coverage](https://codeclimate.com/github/AthensFramework/encryption/badges/coverage.svg)](https://codeclimate.com/github/AthensFramework/encryption/coverage)
+[![Latest Stable Version](https://poser.pugx.org/Athens/Encryption/v/stable)](https://packagist.org/packages/Athens/Encryption)
 
-UWDOEM/Encryption
+Athens\Encryption
 =============
 
 Seamlessly encrypt/decrypt Propel2 data fields. This library is a *plugin* for the [Propel2 ORM framework](http://propelorm.org/).
@@ -27,7 +27,7 @@ For example:
 
 // Before any database queries:
 
-    use UWDOEM\Encryption\Cipher;
+    use Athens\Encryption\Cipher;
     Cipher::createInstance("mysecretpassphrase");
 
 
@@ -54,17 +54,17 @@ Given the table definition above, the string `"Some data that will be encrypted.
 Note/Tradeoff
 =============
 
-UWDOEM/Encryption *breaks Propel's native search/find/sort* methods on the encrypted field(s). Because the plain-texts of encrypted fields are not available to the database, no database method of search or sort can operate on these fields. A search or sort can only be accomplished by *retrieving all rows*, decrypting all values, and performing a search/sort on those. If you have many rows and you need to search/sort on encrypted fields, this process may be impractically slow.
+Athens/Encryption *breaks Propel's native search/find/sort* methods on the encrypted field(s). Because the plain-texts of encrypted fields are not available to the database, no database method of search or sort can operate on these fields. A search or sort can only be accomplished by *retrieving all rows*, decrypting all values, and performing a search/sort on those. If you have many rows and you need to search/sort on encrypted fields, this process may be impractically slow.
 
 Installation
 ===============
 
-This library is published on packagist. To install using Composer, add the `"uwdoem/encryption": "0.1.*"` line to your "require" dependencies:
+This library is published on packagist. To install using Composer, add the `"Athens/Encryption": "0.1.*"` line to your "require" dependencies:
 
 ```
 {
     "require": {
-        "uwdoem/encryption": ">=0.1"
+        "Athens/Encryption": ">=0.1"
     }
 }
 ```
@@ -119,17 +119,17 @@ Compatibility
 Todo
 ====
 
-See GitHub [issue tracker](https://github.com/UWEnrollmentManagement/Encryption/issues/).
+See GitHub [issue tracker](https://github.com/AthensFramework/encryption/issues/).
 
 
 Getting Involved
 ================
 
-Feel free to open pull requests or issues. [GitHub](https://github.com/UWEnrollmentManagement/Encryption) is the canonical location of this project.
+Feel free to open pull requests or issues. [GitHub](https://github.com/AthensFramework/encryption) is the canonical location of this project.
 
 Here's the general sequence of events for code contribution:
 
-1. Open an issue in the [issue tracker](https://github.com/UWEnrollmentManagement/Encryption/issues/).
+1. Open an issue in the [issue tracker](https://github.com/AthensFramework/encryption/issues/).
 2. In any order:
   * Submit a pull request with a **failing** test that demonstrates the issue/feature.
   * Get acknowledgement/concurrence.

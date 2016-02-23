@@ -1,8 +1,8 @@
 <?php
 
-namespace UWDOEM\Encryption\Test\Mock;
+namespace Athens\Encryption\Test\Mock;
 
-use UWDOEM\Encryption\EncryptionBehavior;
+use Athens\Encryption\EncryptionBehavior;
 
 class MockEncryptionBehavior extends EncryptionBehavior
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace UWDOEM\Encryption\Test;
+namespace Athens\Encryption\Test;
 
 use PHPUnit_Framework_TestCase;
 
-use UWDOEM\Encryption\Cipher;
+use Athens\Encryption\Cipher;
 
 class CipherTest extends PHPUnit_Framework_TestCase
 {
