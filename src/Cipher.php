@@ -14,10 +14,15 @@ class Cipher {
     const IV_SIZE = 16;
     const ENCRYPTION_METHOD = "aes-256-cbc";
 
+    /** @var Cipher */
     protected static $instance;
 
+    /** @var string */
     protected $passphrase;
 
+    /**
+     * @param string $passphrase
+     */
     protected function __construct($passphrase) {
         $this->passphrase = $passphrase;
     }
@@ -75,6 +80,10 @@ class Cipher {
 
     }
 
+    /**
+     * @param resource $encryptedStream
+     * @return null|string
+     */
     public function decryptStream($encryptedStream) {
         if (is_null($encryptedStream)) {
             return null;
@@ -84,8 +93,10 @@ class Cipher {
     }
 
     /**
-     * @param string $passphrase The passphrase to be used to encrypt/decrypt data
-     * @throws \Exception if you attempt to initialize the cipher more than one time in a page-load via ::createInstance
+     * @param string $passphrase The passphrase to be used to encrypt/decrypt data.
+     * @return void
+     * @throws \Exception If you attempt to initialize the cipher more than one time
+     *                    in a page-load via ::createInstance.
      */
     public static function createInstance($passphrase) {
         if (!empty(self::$instance)) {
