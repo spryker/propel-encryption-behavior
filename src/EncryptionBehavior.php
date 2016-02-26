@@ -115,7 +115,7 @@ class EncryptionBehavior extends Behavior
             ) {
                 throw new \Exception("The column $columnName is encrypted, and does not support this form of query.");
             } else {
-                $value = \UWDOEM\Encryption\Cipher::getInstance()->deterministicEncrypt((string)$value);
+                $value = \Athens\Encryption\Cipher::getInstance()->deterministicEncrypt((string)$value);
             }
         }
 
