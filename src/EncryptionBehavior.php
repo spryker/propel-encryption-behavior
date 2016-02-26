@@ -58,7 +58,7 @@ class EncryptionBehavior extends Behavior
         foreach ($this->getColumnRealNames() as $realColumnName) {
             static::insertEncryptedColumnName($script, $realColumnName);
 
-            if ($this->isSearchable() === true) {
+            if ($this->isSearchable() === true || strtolower($this->isSearchable()) === 'true') {
                 static::insertSearchableEncryptedColumnName($script, $realColumnName);
             }
         }
