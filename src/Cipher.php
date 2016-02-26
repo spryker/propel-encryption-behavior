@@ -9,7 +9,8 @@ namespace Athens\Encryption;
  *
  * @package Athens\Encryption
  */
-class Cipher {
+class Cipher
+{
 
     const IV_SIZE = 16;
     const ENCRYPTION_METHOD = "aes-256-cbc";
@@ -23,17 +24,19 @@ class Cipher {
     /**
      * @param string $passphrase
      */
-    protected function __construct($passphrase) {
+    protected function __construct($passphrase)
+    {
         $this->passphrase = $passphrase;
     }
 
     /**
      * Converts a plain-text string into an encrypted string
      *
-     * @param string $string plain-text to encrypt
-     * @return string the encrypted string
+     * @param string $string Plain-text to encrypt.
+     * @return string The encrypted string.
      */
-    public function encrypt($string) {
+    public function encrypt($string)
+    {
         $iv = mcrypt_create_iv(self::IV_SIZE, MCRYPT_RAND);
         return $this->doEncrypt($string, $iv);
     }
@@ -55,28 +58,41 @@ class Cipher {
      * This method is employed for encrypting Propel columns that are designated as 'searchable'
      * in the included EncryptionBehavior.
      *
-     * @param string $string plain-text to encrypt
-     * @return string the encrypted string
+     * @param string $string Plain-text to encrypt.
+     * @return string The encrypted string.
      */
-    public function deterministicEncrypt($string) {
+    public function deterministicEncrypt($string)
+    {
         $iv = str_repeat("0", self::IV_SIZE);
         return $this->doEncrypt($string, $iv);
     }
 
-
-    protected function doEncrypt($string, $iv) {
+    /**
+     * @param string $string
+     * @param string $iv
+     * @return string
+     */
+    protected function doEncrypt($string, $iv)
+    {
         return $iv.openssl_encrypt($string, self::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
     }
 
     /**
      * Converts an encrypted string into a plain-text string
      *
-     * @param string $encryptedMessage the encrypted string
-     * @return string the plaint-text string
+     * @param string $encryptedMessage The encrypted string.
+     * @return string The plaint-text string.
      */
-    public function decrypt($encryptedMessage) {
+    public function decrypt($encryptedMessage)
+    {
         $iv = substr($encryptedMessage, 0, self::IV_SIZE);
-        return openssl_decrypt(substr($encryptedMessage, self::IV_SIZE), self::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
+        return openssl_decrypt(
+            substr($encryptedMessage, self::IV_SIZE),
+            self::ENCRYPTION_METHOD,
+            $this->passphrase,
+            0,
+            $iv
+        );
 
     }
 
@@ -84,8 +100,9 @@ class Cipher {
      * @param resource $encryptedStream
      * @return null|string
      */
-    public function decryptStream($encryptedStream) {
-        if (is_null($encryptedStream)) {
+    public function decryptStream($encryptedStream)
+    {
+        if ($encryptedStream === null) {
             return null;
         } else {
             return self::decrypt(stream_get_contents($encryptedStream, -1, 0));
@@ -98,8 +115,9 @@ class Cipher {
      * @throws \Exception If you attempt to initialize the cipher more than one time
      *                    in a page-load via ::createInstance.
      */
-    public static function createInstance($passphrase) {
-        if (!empty(self::$instance)) {
+    public static function createInstance($passphrase)
+    {
+        if (self::$instance !== null) {
             throw new \Exception(
                 'Cipher::createInstance() called more than once. ' .
                 'Only one cipher instance may be created. '
@@ -110,10 +128,11 @@ class Cipher {
 
     /**
      * @return Cipher
-     * @throws \Exception if ::getInstance is called before cipher is initialized via ::createInstance
+     * @throws \Exception if ::getInstance is called before cipher is initialized via ::createInstance.
      */
-    public static function getInstance() {
-        if (empty(self::$instance)) {
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
             throw new \Exception(
                 'Cipher::getInstance() called before initialization. ' .
                 'Call Cipher::createInstance($passphrase) before ::getInstance().'
@@ -121,7 +140,4 @@ class Cipher {
         }
         return self::$instance;
     }
-
-
-
 }

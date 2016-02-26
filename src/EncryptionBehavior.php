@@ -9,7 +9,8 @@ use Propel\Generator\Model\Behavior;
  *
  * @package Athens\Encryption
  */
-class EncryptionBehavior extends Behavior {
+class EncryptionBehavior extends Behavior
+{
 
     /** @var array */
     protected $parameters = [
@@ -57,7 +58,7 @@ class EncryptionBehavior extends Behavior {
         foreach ($this->getColumnRealNames() as $realColumnName) {
             static::insertEncryptedColumnName($script, $realColumnName);
 
-            if ($this->isSearchable()) {
+            if ($this->isSearchable() === true) {
                 static::insertSearchableEncryptedColumnName($script, $realColumnName);
             }
         }
@@ -136,7 +137,7 @@ EOT;
     {
         $columnNames = [];
         foreach ($this->getParameters() as $key => $columnName) {
-            if (strpos($key, "column_name") !== false && $columnName) {
+            if (strpos($key, "column_name") !== false && empty($columnName) !== true) {
                 $columnNames[] = $columnName;
             }
         }
@@ -151,7 +152,7 @@ EOT;
         $table = $this->getTable();
 
         return array_map(
-            function($columnName) use ($table) {
+            function ($columnName) use ($table) {
                 return $table->getColumn($columnName)->getPhpName();
             },
             $this->getColumnNames()
@@ -166,7 +167,7 @@ EOT;
         $tableName = $this->getTable()->getName();
 
         return array_map(
-            function($columnName) use ($tableName) {
+            function ($columnName) use ($tableName) {
                 return "$tableName.$columnName";
             },
             $this->getColumnNames()
@@ -258,7 +259,8 @@ EOT;
      * @param string $realColumnName
      * @return void
      */
-    public static function insertEncryptedColumnName(&$script, $realColumnName) {
+    public static function insertEncryptedColumnName(&$script, $realColumnName)
+    {
         $insertContent = "\n            '$realColumnName', ";
 
         $insertLocation = strpos($script, '$encryptedColumns = array(') + strlen('$encryptedColumns = array(');
@@ -270,10 +272,13 @@ EOT;
      * @param string $realColumnName
      * @return void
      */
-    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName) {
+    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
+    {
         $insertContent = "\n            '$realColumnName', ";
 
-        $insertLocation = strpos($script, '$encryptedSearchableColumns = array(') + strlen('$encryptedSearchableColumns = array(');
+        $insertLocation = strpos($script, '$encryptedSearchableColumns = array(')
+            + strlen('$encryptedSearchableColumns = array(');
+
         $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
@@ -330,5 +335,4 @@ EOT;
 
         $script = substr_replace($script, $content, $insertionStart, $insertionLength);
     }
-
 }
