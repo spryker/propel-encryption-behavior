@@ -36,12 +36,16 @@ class Cipher
     /**
      * Converts a plain-text string into an encrypted string
      *
-     * @param string $string Plain-text to encrypt.
+     * @param string|null $string Plain-text to encrypt.
      *
-     * @return string The encrypted string.
+     * @return string|null The encrypted string.
      */
-    public function encrypt(string $string): string
+    public function encrypt(?string $string): ?string
     {
+        if ($string === null) {
+            return $string;
+        }
+
         if (function_exists('random_bytes')) {
             $iv = random_bytes(self::IV_SIZE);
         } else {
@@ -68,12 +72,16 @@ class Cipher
      * This method is employed for encrypting Propel columns that are designated as 'searchable'
      * in the included EncryptionBehavior.
      *
-     * @param string $string Plain-text to encrypt.
+     * @param string|null $string Plain-text to encrypt.
      *
-     * @return string The encrypted string.
+     * @return string|null The encrypted string.
      */
-    public function deterministicEncrypt(string $string): string
+    public function deterministicEncrypt(?string $string): ?string
     {
+        if ($string === null) {
+            return $string;
+        }
+
         $iv = str_repeat("0", self::IV_SIZE);
 
         return $this->doEncrypt($string, $iv);

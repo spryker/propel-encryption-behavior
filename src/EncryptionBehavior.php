@@ -40,10 +40,8 @@ class EncryptionBehavior extends Behavior
         foreach ($this->getColumnNames() as $columnName) {
             $column = $table->getColumn($columnName);
 
-            $columnIsVarbinary = $column->getType() === "VARBINARY";
-
-            if ($columnIsVarbinary === false) {
-                throw new \Exception("Encrypted columns must be of type VARBINARY. " .
+            if ($column->isLobType() === false) {
+                throw new \Exception("Encrypted columns must be of a binary type. " .
                     "Encrypted column '{$column->getName()}' of type '{$column->getType()}' found. " .
                     "Revise your schema.");
             }
