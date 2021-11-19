@@ -145,7 +145,7 @@ It's also possible to make a particular column as searchable using `column_name_
 Compatibility
 =============
 
-* PHP 5.5, 5.6, ^7.0
+* PHP >=7.1
 * Propel2
 
 Todo

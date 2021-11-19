@@ -46,11 +46,7 @@ class Cipher
             return $string;
         }
 
-        if (function_exists('random_bytes')) {
-            $iv = random_bytes(self::IV_SIZE);
-        } else {
-            $iv = mcrypt_create_iv(self::IV_SIZE, MCRYPT_RAND);
-        }
+        $iv = random_bytes(self::IV_SIZE);
 
         return $this->doEncrypt($string, $iv);
     }
