@@ -13,7 +13,6 @@ class MockEncryptionBehavior extends EncryptionBehavior
     {
         $this->parameters = $parameters;
         $this->table = new MockTable($columns);
-        parent::__construct();
     }
 
     public function getTable()
