@@ -84,6 +84,11 @@ class Cipher
 
         $iv = str_repeat("0", self::IV_SIZE);
 
+        // prevent second encryption during ModelCriteria::findOneOrCreate()
+        if (strpos($string, $iv) === 0) {
+            return $string;
+        }
+
         return $this->doEncrypt($string, $iv);
     }
 
