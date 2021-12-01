@@ -1,23 +1,23 @@
 {
   "name": "athens/encryption",
   "description": "Propel Behavior for seamless encryption/decryption of data columns",
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "autoload-dev": {
+    "classmap": [
+      "test/"
+    ]
+  },
   "require": {
     "php": ">=7.1",
     "propel/propel": "~2.0@dev"
   },
   "require-dev": {
     "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Athens\\Encryption\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Athens\\Encryption\\Test\\": "test/"
-    }
-  },
+  }
   "type" : "propel-behavior",
   "extra": {
     "name": "encryption",
