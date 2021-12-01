@@ -17,10 +17,13 @@ For example:
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
 
         <column name="my_data" type="varchar" size="255" />
-        <column name="my_secret_data" type="varbinary" size="255" />
+        <column name="my_secret_data" type="BLOB" />
+        <column name="my_searchable_data" type="varbinary" size="255" />
 
         <behavior name="encryption">
             <parameter name="column_name_1" value="my_secret_data" />
+            <parameter name="column_name_searchable_1" value="my_searchable_data" />
+            <parameter name="searchable" value="false" />
         </behavior>
     </table>
 
@@ -76,7 +79,7 @@ Use
 
 This client library provides a `Cipher` class and one Propel2 Behavior class.
 
-To designate a field as encrypted in your Propel schema, set its type as `varbinary` and include the `encryption` behavior. You may include multiple columns in the `encryption` behavior:
+To designate a field as encrypted in your Propel schema, set its type as `VARBINARY`, `LONGVARBINARY` or `BLOB` and include the `encryption` behavior. You may include multiple columns in the `encryption` behavior:
 
 ```
     <table name="my_class">
@@ -109,11 +112,40 @@ That's it! The class setters for `MySecretData` and `MySecretData2` now seamless
 
 Remember that search/find and sort are now *broken* for `MySecretData` and `MySecretData2`, for reasons discussed above.
 
+## Filtering
+By default all encrypted columns are not searchable. It's possible to make all encrypted columns of a table searchable by setting a parameter `searchable` to `true`
+```
+    <table name="my_class">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="my_data" type="varchar" size="255" />
+        <column name="my_secret_data" type="varbinary" size="255" />
+
+        <behavior name="encryption">
+            <parameter name="column_name_1" value="my_secret_data" />
+            <parameter name="searchable" value="true" />
+        </behavior>
+    </table>
+```
+It's also possible to make a particular column as searchable using `column_name_searchable_*` prefix
+```
+    <table name="my_class">
+        <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="my_data" type="VARCHAR" size="255" />
+        <column name="my_secret_data" type="BLOB" />
+        <column name="my_secret_searchable_data" type="VARBINARY" size="255" />
+
+        <behavior name="encryption">
+            <parameter name="column_name_1" value="my_secret_data" />
+            <parameter name="column_name_searchable_1" value="my_secret_searchable_data" />
+        </behavior>
+    </table>
+```
+> **Be aware:** For the searchable columns will be used a fixed IV. It looses data security.
 
 Compatibility
 =============
 
-* PHP 5.5, 5.6, 7.0
+* PHP >=7.1
 * Propel2
 
 Todo

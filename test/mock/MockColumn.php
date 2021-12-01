@@ -8,6 +8,8 @@
 
 namespace Athens\Encryption\Test\Mock;
 
+use Propel\Generator\Model\PropelTypes;
+
 class MockColumn
 {
     protected $phpName;
@@ -32,5 +34,10 @@ class MockColumn
     public function getName()
     {
         return $this->phpName;
+    }
+
+    public function isLobType()
+    {
+        return PropelTypes::isLobType($this->getType());
     }
 }

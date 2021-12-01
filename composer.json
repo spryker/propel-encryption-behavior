@@ -12,11 +12,11 @@
     ]
   },
   "require": {
+    "php": ">=7.1",
     "propel/propel": "~2.0@dev"
   },
   "require-dev": {
-    "phpdocumentor/phpdocumentor": "2.7.*",
-    "phpunit/phpunit": "4.5.*",
+    "phpunit/phpunit": ">=7.0",
     "codeclimate/php-test-reporter": "dev-master",
     "athens/standard": "*"
   },

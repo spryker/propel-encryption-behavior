@@ -11,10 +11,11 @@ use Propel\Generator\Model\Behavior;
  */
 class EncryptionBehavior extends Behavior
 {
-
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $parameters = [
-        'searchable' => false
+        'searchable' => false,
     ];
 
     /**
@@ -29,36 +30,37 @@ class EncryptionBehavior extends Behavior
 
     /**
      * @param string $script
+     *
      * @return void
+     *
      * @throws \Exception If the schema specifies encryption on fields which are not
      *                    VARBINARY.
      */
     public function tableMapFilter(&$script)
     {
-        $table = $this->getTable();
-
-        foreach ($this->getColumnNames() as $columnName) {
-            $column = $table->getColumn($columnName);
-
-            $columnIsVarbinary = $column->getType() === "VARBINARY";
-
-            if ($columnIsVarbinary === false) {
-                throw new \Exception("Encrypted columns must be of type VARBINARY. " .
-                    "Encrypted column '{$column->getName()}' of type '{$column->getType()}' found. " .
-                    "Revise your schema.");
-            }
-        }
-
         if (static::encryptedColumnsDeclarationExists($script) === false) {
             $insertLocation = strpos($script, ";", strpos($script, "const TABLE_NAME")) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
 
-        foreach ($this->getColumnRealNames() as $realColumnName) {
+        $table = $this->getTable();
+        $columnNames = $this->getColumnNames();
+        $searchableColumnNames = $this->getSearchableColumnNames();
+
+        foreach ($columnNames as $columnName) {
+            $column = $table->getColumn($columnName);
+
+            if ($column->isLobType() === false) {
+                throw new \Exception("Encrypted columns must be of a binary type. " .
+                    "Encrypted column '{$column->getName()}' of type '{$column->getType()}' found. " .
+                    "Revise your schema.");
+            }
+
+            $realColumnName = $this->createRealColumnName($columnName, $table->getName());
             static::insertEncryptedColumnName($script, $realColumnName);
 
-            if ($this->isSearchable() === true || strtolower($this->isSearchable()) === 'true') {
+            if ($this->isSearchable($columnName, $searchableColumnNames)) {
                 static::insertSearchableEncryptedColumnName($script, $realColumnName);
             }
         }
@@ -66,20 +68,27 @@ class EncryptionBehavior extends Behavior
 
     /**
      * @param string $script
+     *
      * @return void
      */
     public function objectFilter(&$script)
     {
-        $phpColumnNames = $this->getColumnPhpNames();
+        $columnNames = $this->getColumnNames();
+        $searchableColumnNames = $this->getSearchableColumnNames();
+        $table = $this->getTable();
 
-        foreach ($phpColumnNames as $columnPhpName) {
-            $this->addEncryptionToSetter($script, $columnPhpName);
+        foreach ($columnNames as $columnName) {
+            $isSearchable = $this->isSearchable($columnName, $searchableColumnNames);
+            $columnPhpName = $table->getColumn($columnName)->getPhpName();
+
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable);
             $this->addDecryptionToGetter($script, $columnPhpName);
         }
     }
 
     /**
      * @param string $script
+     *
      * @return void
      */
     public function queryFilter(&$script)
@@ -92,7 +101,6 @@ class EncryptionBehavior extends Behavior
 
     public function addUsingOperator($p1, $value = null, $operator = null, $preferColumnCondition = true)
     {
-        /** @var StudentTableMap $tableMap */
         $tableMap = $this->getTableMap();
 
         /** @var boolean $isCriterion */
@@ -131,71 +139,114 @@ EOT;
     }
 
     /**
-     * @return string[]
+     * @param string $script
+     * @param string $realColumnName
+     *
+     * @return void
      */
-    protected function getColumnNames()
+    public static function insertEncryptedColumnName(&$script, $realColumnName)
     {
-        $columnNames = [];
-        foreach ($this->getParameters() as $key => $columnName) {
-            if (strpos($key, "column_name") !== false && empty($columnName) !== true) {
-                $columnNames[] = $columnName;
-            }
-        }
-        return $columnNames;
-    }
+        $insertContent = "\n            '$realColumnName', ";
 
-    /**
-     * @return string[]
-     */
-    protected function getColumnPhpNames()
-    {
-        $table = $this->getTable();
-
-        return array_map(
-            function ($columnName) use ($table) {
-                return $table->getColumn($columnName)->getPhpName();
-            },
-            $this->getColumnNames()
-        );
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function getColumnRealNames()
-    {
-        $tableName = $this->getTable()->getName();
-
-        return array_map(
-            function ($columnName) use ($tableName) {
-                return "$tableName.$columnName";
-            },
-            $this->getColumnNames()
-        );
-    }
-
-    /**
-     * @return boolean
-     */
-    protected function isSearchable()
-    {
-        return $this->getParameter('searchable');
+        $insertLocation = strpos($script, '$encryptedColumns = array(') + strlen('$encryptedColumns = array(');
+        $script = substr_replace($script, $insertContent, $insertLocation, 0);
     }
 
     /**
      * @param string $script
+     * @param string $realColumnName
+     *
+     * @return void
+     */
+    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
+    {
+        $insertContent = "\n            '$realColumnName', ";
+
+        $insertLocation = strpos($script, '$encryptedSearchableColumns = array(')
+            + strlen('$encryptedSearchableColumns = array(');
+
+        $script = substr_replace($script, $insertContent, $insertLocation, 0);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getColumnNames(): array
+    {
+        return $this->getParameterValuesByPrefix('column_name');
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getSearchableColumnNames(): array
+    {
+        return $this->getParameterValuesByPrefix('column_name_searchable');
+    }
+
+    /**
+     * @param string $prefix
+     *
+     * @return array
+     */
+    protected function getParameterValuesByPrefix(string $prefix): array
+    {
+        $parameterValues = [];
+        foreach ($this->getParameters() as $parameterName => $parameterValue) {
+            if (strpos($parameterName, $prefix) !== false && !empty($parameterValue)) {
+                $parameterValues[] = $parameterValue;
+            }
+        }
+        return $parameterValues;
+    }
+
+    /**
+     * @param string $columnName
+     * @param string $tableName
+     *
+     * @return string
+     */
+    protected function createRealColumnName(string $columnName, string $tableName): string
+    {
+        return sprintf('%s.%s', $tableName, $columnName);
+    }
+
+    /**
+     * @param string $columnName
+     * @param array $searchableColumnNames
+     *
      * @return boolean
      */
-    protected static function encryptedColumnsDeclarationExists($script)
+    protected function isSearchable(string $columnName, array $searchableColumnNames = []): bool
+    {
+        $searchableParameter = $this->getParameter('searchable');
+
+        if ($searchableParameter === true
+            || strtolower($searchableParameter) === 'true'
+            || array_search($columnName, $searchableColumnNames) !== false
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $script
+     *
+     * @return boolean
+     */
+    protected static function encryptedColumnsDeclarationExists(string $script): bool
     {
         return strpos($script, 'protected static $encryptedColumns') !== false;
     }
 
     /**
      * @param string $script
+     *
      * @return void
      */
-    protected static function insertEncryptedColumnNameAccessMethods(&$script)
+    protected static function insertEncryptedColumnNameAccessMethods(string &$script): void
     {
         $useString = <<<'EOT'
 
@@ -230,11 +281,11 @@ EOT;
     /**
      * @param string  $script
      * @param integer $position
+     *
      * @return void
      */
-    protected static function insertEncryptedColumnsDeclaration(&$script, $position)
+    protected static function insertEncryptedColumnsDeclaration(string &$script, int $position): void
     {
-
         $content = <<<'EOT'
 
 
@@ -256,38 +307,12 @@ EOT;
 
     /**
      * @param string $script
-     * @param string $realColumnName
-     * @return void
-     */
-    public static function insertEncryptedColumnName(&$script, $realColumnName)
-    {
-        $insertContent = "\n            '$realColumnName', ";
-
-        $insertLocation = strpos($script, '$encryptedColumns = array(') + strlen('$encryptedColumns = array(');
-        $script = substr_replace($script, $insertContent, $insertLocation, 0);
-    }
-
-    /**
-     * @param string $script
-     * @param string $realColumnName
-     * @return void
-     */
-    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
-    {
-        $insertContent = "\n            '$realColumnName', ";
-
-        $insertLocation = strpos($script, '$encryptedSearchableColumns = array(')
-            + strlen('$encryptedSearchableColumns = array(');
-
-        $script = substr_replace($script, $insertContent, $insertLocation, 0);
-    }
-
-    /**
-     * @param string $script
      * @param string $columnPhpName
+     * @param bool $isSearchable
+     *
      * @return void
      */
-    protected function addEncryptionToSetter(&$script, $columnPhpName)
+    protected function addEncryptionToSetter(string &$script, string $columnPhpName, bool $isSearchable): void
     {
         $setterLocation = strpos($script, "set$columnPhpName");
 
@@ -295,7 +320,7 @@ EOT;
         $length = strpos($script, ")", $setterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
-        $encryptionMethod = $this->isSearchable() ? "deterministicEncrypt" : "encrypt";
+        $encryptionMethod = $isSearchable ? "deterministicEncrypt" : "encrypt";
         $content = <<<EOT
 
         // Encrypt the variable, per \Athens\Encryption\EncryptionBehavior.
@@ -310,9 +335,10 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
+     *
      * @return void
      */
-    protected function addDecryptionToGetter(&$script, $columnPhpName)
+    protected function addDecryptionToGetter(string &$script, string $columnPhpName): void
     {
         $getterLocation = strpos($script, "get$columnPhpName");
 

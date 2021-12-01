@@ -2,37 +2,55 @@
 
 namespace Athens\Encryption\Test;
 
-use PHPUnit_Framework_TestCase;
-
+use PHPUnit\Framework\TestCase;
 use Athens\Encryption\Cipher;
 
-class CipherTest extends PHPUnit_Framework_TestCase
+class CipherTest extends TestCase
 {
-
     /**
-     * @expectedException              Exception
-     * @expectedExceptionMessageRegExp #called before initialization.*#
+     * @throws \Exception
+     *
+     * @return void
      */
-    public function testGetInstanceBeforeCreate()
+    public function testGetInstanceBeforeCreate():void
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('called before initialization.');
+
         Cipher::getInstance();
     }
 
-    public function testCipherCreation()
+    /**
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function testCipherCreation(): void
     {
+        Cipher::createInstance("blaksjdfoiuwer");
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function testCreateInstanceTwice(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Only one cipher instance may be created.');
+
         Cipher::createInstance("blaksjdfoiuwer");
     }
 
     /**
-     * @expectedException              Exception
-     * @expectedExceptionMessageRegExp #Only one cipher instance may be created.*#
+     * @throws \Exception
+     *
+     * @return void
      */
-    public function testCreateInstanceTwice()
-    {
-        Cipher::createInstance("blaksjdfoiuwer");
-    }
-
-    public function testEncrypt()
+    public function testEncrypt(): void
     {
         $plainText = "plaintext";
 
@@ -43,7 +61,12 @@ class CipherTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($encryptedText1, $encryptedText2);
     }
 
-    public function testEncryptDecrypt()
+    /**
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function testEncryptDecrypt(): void
     {
 
         $plainText = "plaintext";

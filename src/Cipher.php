@@ -11,14 +11,18 @@ namespace Athens\Encryption;
  */
 class Cipher
 {
-
     const IV_SIZE = 16;
+
     const ENCRYPTION_METHOD = "aes-256-cbc";
 
-    /** @var Cipher */
+    /**
+     * @var Cipher
+     */
     protected static $instance;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $passphrase;
 
     /**
@@ -32,12 +36,18 @@ class Cipher
     /**
      * Converts a plain-text string into an encrypted string
      *
-     * @param string $string Plain-text to encrypt.
-     * @return string The encrypted string.
+     * @param string|null $string Plain-text to encrypt.
+     *
+     * @return string|null The encrypted string.
      */
-    public function encrypt($string)
+    public function encrypt(?string $string): ?string
     {
-        $iv = mcrypt_create_iv(self::IV_SIZE, MCRYPT_RAND);
+        if ($string === null) {
+            return $string;
+        }
+
+        $iv = random_bytes(self::IV_SIZE);
+
         return $this->doEncrypt($string, $iv);
     }
 
@@ -58,21 +68,33 @@ class Cipher
      * This method is employed for encrypting Propel columns that are designated as 'searchable'
      * in the included EncryptionBehavior.
      *
-     * @param string $string Plain-text to encrypt.
-     * @return string The encrypted string.
+     * @param string|null $string Plain-text to encrypt.
+     *
+     * @return string|null The encrypted string.
      */
-    public function deterministicEncrypt($string)
+    public function deterministicEncrypt(?string $string): ?string
     {
+        if ($string === null) {
+            return $string;
+        }
+
         $iv = str_repeat("0", self::IV_SIZE);
+
+        // prevent second encryption during ModelCriteria::findOneOrCreate()
+        if (strpos($string, $iv) === 0) {
+            return $string;
+        }
+
         return $this->doEncrypt($string, $iv);
     }
 
     /**
      * @param string $string
      * @param string $iv
+     *
      * @return string
      */
-    protected function doEncrypt($string, $iv)
+    protected function doEncrypt(string $string, string $iv): string
     {
         return $iv.openssl_encrypt($string, self::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
     }
@@ -81,11 +103,13 @@ class Cipher
      * Converts an encrypted string into a plain-text string
      *
      * @param string $encryptedMessage The encrypted string.
+     *
      * @return string The plaint-text string.
      */
-    public function decrypt($encryptedMessage)
+    public function decrypt(string $encryptedMessage): string
     {
         $iv = substr($encryptedMessage, 0, self::IV_SIZE);
+
         return openssl_decrypt(
             substr($encryptedMessage, self::IV_SIZE),
             self::ENCRYPTION_METHOD,
@@ -98,9 +122,10 @@ class Cipher
 
     /**
      * @param resource $encryptedStream
+     *
      * @return null|string
      */
-    public function decryptStream($encryptedStream)
+    public function decryptStream($encryptedStream): ?string
     {
         if ($encryptedStream === null) {
             return null;
@@ -111,11 +136,13 @@ class Cipher
 
     /**
      * @param string $passphrase The passphrase to be used to encrypt/decrypt data.
+     *
      * @return void
+     *
      * @throws \Exception If you attempt to initialize the cipher more than one time
      *                    in a page-load via ::createInstance.
      */
-    public static function createInstance($passphrase)
+    public static function createInstance(string $passphrase): void
     {
         if (self::$instance !== null) {
             throw new \Exception(
@@ -128,9 +155,10 @@ class Cipher
 
     /**
      * @return Cipher
+     *
      * @throws \Exception if ::getInstance is called before cipher is initialized via ::createInstance.
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             throw new \Exception(
@@ -138,6 +166,7 @@ class Cipher
                 'Call Cipher::createInstance($passphrase) before ::getInstance().'
             );
         }
+
         return self::$instance;
     }
 }
