@@ -3,9 +3,6 @@ name: CI
 on:
   pull_request:
   push:
-    branches:
-      - master
-      - feature/[a-z]+-[0-9]+/dev-*
   workflow_dispatch:
 
 jobs:
@@ -16,7 +13,7 @@ jobs:
       matrix:
         php-version: [
             '7.1',
-            '7.4'
+            '8.1'
         ]
 
     steps:
