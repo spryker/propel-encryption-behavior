@@ -24,28 +24,34 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl
+          tools: composer:v2
 
-      - name: Get Composer Cache Directory
+      - name: Composer get cache directory
         id: composer-cache
         run: |
           echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
+
+      - name: Composer cache
+        uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
+      - name: Composer validate
+        run: composer validate
+
+      - name: Composer version
+        run: composer --version
+
       - name: Composer install
-        run: |
-          composer --version
-          composer install --optimize-autoloader
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, intl, pdo_mysql
+        run: composer install
 
       - name: PHPUnit run
         run: vendor/bin/phpunit --configuration test/phpunit.xml test
