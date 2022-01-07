@@ -51,5 +51,5 @@ jobs:
         run: composer install
 
       - name: PHPUnit run
-        run: vendor/bin/phpunit --configuration test/phpunit.xml test
+        run: vendor/bin/phpunit --configuration tests/phpunit.xml tests
 
