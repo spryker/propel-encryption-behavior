@@ -1,9 +1,9 @@
 <?php
 
-namespace Athens\Encryption\Test;
+namespace Spryker\PropelEncryptionBehavior\Test;
 
 use PHPUnit\Framework\TestCase;
-use Athens\Encryption\Cipher;
+use Spryker\PropelEncryptionBehavior\Cipher;
 
 class CipherTest extends TestCase
 {

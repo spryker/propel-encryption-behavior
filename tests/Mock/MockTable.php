@@ -1,6 +1,6 @@
 <?php
 
-namespace Athens\Encryption\Test\Mock;
+namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
 class MockTable
 {

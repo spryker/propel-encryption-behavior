@@ -6,7 +6,7 @@
  * Time: 2:55 PM
  */
 
-namespace Athens\Encryption\Test\Mock;
+namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
 use Propel\Generator\Model\PropelTypes;
 

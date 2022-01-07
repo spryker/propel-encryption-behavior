@@ -1,8 +1,8 @@
 <?php
 
-namespace Athens\Encryption\Test\Mock;
+namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
-use Athens\Encryption\EncryptionBehavior;
+use Spryker\PropelEncryptionBehavior\EncryptionBehavior;
 
 class MockEncryptionBehavior extends EncryptionBehavior
 {
