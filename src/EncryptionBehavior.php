@@ -38,14 +38,8 @@ class EncryptionBehavior extends Behavior
      */
     public function tableMapFilter(string &$script): void
     {
-        $position = strpos($script, 'const TABLE_NAME');
-
-        if ($position === false) {
-            throw new Exception('Script doesn\'t have the \'const TABLE_NAME\' string.');
-        }
-
         if (static::encryptedColumnsDeclarationExists($script) === false) {
-            $insertLocation = strpos($script, ';', $position) + 1;
+            $insertLocation = strpos($script, ';', strpos($script, 'const TABLE_NAME')) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
