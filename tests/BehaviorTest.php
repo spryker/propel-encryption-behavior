@@ -226,6 +226,7 @@ EOT;
      */
     public function testObjectFilter(): void
     {
+        // Arrange
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
@@ -234,8 +235,10 @@ EOT;
             ],
         );
 
+        // Act
         $behavior->objectFilter($this->objectFilterInput);
 
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->objectFilterExpected),
             $this->normalizeWhitespace($this->objectFilterInput),
@@ -247,6 +250,7 @@ EOT;
      */
     public function testMapFilter(): void
     {
+        // Arrange
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
@@ -255,15 +259,19 @@ EOT;
             ],
         );
 
+        // Act
         // Run table map filter once, and an encrypted columns declaration is created
         $behavior->tableMapFilter($this->mapFilterInput);
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpected),
             $this->normalizeWhitespace($this->mapFilterInput),
         );
 
+        // Act
         // Run it twice, and the new column name is inserted beside the old
         $behavior->tableMapFilter($this->mapFilterInput);
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpectedSecond),
             $this->normalizeWhitespace($this->mapFilterInput),
@@ -275,6 +283,7 @@ EOT;
      */
     public function testBehaviorExceptionOnNonVarBinaryColumn(): void
     {
+        // Arrange
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Encrypted columns must be of a binary type. Encrypted column \'NotVarBinaryColumn\' of type \'NOTVARBINARY\' found. Revise your schema.');
 
@@ -286,6 +295,7 @@ EOT;
             ],
         );
 
+        // Act
         // Run table map filter once, and an encrypted columns declaration is created
         $input = '';
         $behavior->tableMapFilter($input);

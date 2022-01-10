@@ -16,6 +16,16 @@ class CipherTest extends TestCase
     /**
      * @return void
      */
+    public function tearDown(): void
+    {
+        Cipher::resetInstance();
+
+        parent::tearDown();
+    }
+
+    /**
+     * @return void
+     */
     public function testGetInstanceBeforeCreate(): void
     {
         $this->expectException(Exception::class);
@@ -29,8 +39,10 @@ class CipherTest extends TestCase
      */
     public function testCipherCreation(): void
     {
+        // Act
         Cipher::createInstance('blaksjdfoiuwer');
 
+        // Assert
         $this->assertTrue(true);
     }
 
@@ -39,9 +51,12 @@ class CipherTest extends TestCase
      */
     public function testCreateInstanceTwice(): void
     {
+        // Arrange
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Only one cipher instance may be created.');
 
+        // Act
+        Cipher::createInstance('sadfhgsdfsdsdf');
         Cipher::createInstance('blaksjdfoiuwer');
     }
 
@@ -50,12 +65,15 @@ class CipherTest extends TestCase
      */
     public function testEncrypt(): void
     {
+        // Arrange
         $plainText = 'plaintext';
+        Cipher::createInstance('sadfhgsdfsdsdf');
 
+        // Act
         $encryptedText1 = Cipher::getInstance()->encrypt($plainText);
         $encryptedText2 = Cipher::getInstance()->encrypt($plainText);
 
-        // Assert that a given plain text will not encrypt to the same encrypted text every time
+        // Assert
         $this->assertNotEquals($encryptedText1, $encryptedText2);
     }
 
@@ -64,13 +82,15 @@ class CipherTest extends TestCase
      */
     public function testEncryptDecrypt(): void
     {
+        // Arrange
         $plainText = 'plaintext';
+        Cipher::createInstance('sadfhgsdfsdsdf');
+
+        // Act
         $encryptedText = Cipher::getInstance()->encrypt($plainText);
 
-        // Assert that the encrypted text is not the same as the plain text
+        // Assert
         $this->assertNotEquals($plainText, $encryptedText);
-
-        // Assert that the encrypted text is equal to the plain text when decrypted
         $this->assertEquals($plainText, Cipher::getInstance()->decrypt($encryptedText));
     }
 
@@ -79,9 +99,12 @@ class CipherTest extends TestCase
      */
     public function testResetInstance(): void
     {
+        // Arrange
+        Cipher::createInstance('sadfhgsdfsdsdf');
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('called before initialization.');
 
+        // Act
         Cipher::resetInstance();
         Cipher::getInstance();
     }
