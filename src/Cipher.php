@@ -22,7 +22,7 @@ class Cipher
     public const ENCRYPTION_METHOD = 'aes-256-cbc';
 
     /**
-     * @var \Spryker\PropelEncryptionBehavior\Cipher
+     * @var \Spryker\PropelEncryptionBehavior\Cipher|null
      */
     protected static $instance;
 
@@ -110,9 +110,9 @@ class Cipher
      *
      * @param string $encryptedMessage The encrypted string.
      *
-     * @return string The plaint-text string.
+     * @return string|bool The decrypted string on success or false on failure.
      */
-    public function decrypt(string $encryptedMessage): string
+    public function decrypt(string $encryptedMessage)
     {
         $iv = substr($encryptedMessage, 0, static::IV_SIZE);
 
@@ -126,7 +126,7 @@ class Cipher
     }
 
     /**
-     * @param resource $encryptedStream
+     * @param resource|null $encryptedStream
      *
      * @return string|null
      */
@@ -136,7 +136,15 @@ class Cipher
             return null;
         }
 
-        return $this->decrypt(stream_get_contents($encryptedStream, -1, 0));
+        $content = stream_get_contents($encryptedStream, -1, 0);
+
+        if ($content === false) {
+            return null;
+        }
+
+        $decryptedContent = $this->decrypt($content);
+
+        return is_string($decryptedContent) ? $decryptedContent : null;
     }
 
     /**
@@ -155,6 +163,7 @@ class Cipher
                 'Only one cipher instance may be created. ',
             );
         }
+
         static::$instance = new static($passphrase);
     }
 

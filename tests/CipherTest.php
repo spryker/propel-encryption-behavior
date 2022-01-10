@@ -79,11 +79,9 @@ class CipherTest extends TestCase
      */
     public function testResetInstance(): void
     {
-        // Arrange
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('called before initialization.');
 
-        // Act
         Cipher::resetInstance();
         Cipher::getInstance();
     }

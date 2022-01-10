@@ -13,7 +13,7 @@ use Propel\Generator\Model\Behavior;
 class EncryptionBehavior extends Behavior
 {
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $parameters = [
         'searchable' => false,
@@ -32,15 +32,20 @@ class EncryptionBehavior extends Behavior
     /**
      * @param string $script
      *
-     * @throws \Exception If the schema specifies encryption on fields which are not
-     *                    VARBINARY.
+     * @throws \Exception If the schema specifies encryption on fields which are not VARBINARY.
      *
      * @return void
      */
     public function tableMapFilter(string &$script): void
     {
+        $position = strpos($script, 'const TABLE_NAME');
+
+        if ($position === false) {
+            throw new Exception('Script doesn\'t have the \'const TABLE_NAME\' string.');
+        }
+
         if (static::encryptedColumnsDeclarationExists($script) === false) {
-            $insertLocation = strpos($script, ';', strpos($script, 'const TABLE_NAME')) + 1;
+            $insertLocation = strpos($script, ';', $position) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
@@ -52,10 +57,16 @@ class EncryptionBehavior extends Behavior
         foreach ($columnNames as $columnName) {
             $column = $table->getColumn($columnName);
 
+            if (!$column) {
+                throw new Exception('Encrypted column with the "$columnName" name is not found. Revise your schema.');
+            }
+
             if ($column->isLobType() === false) {
-                throw new Exception('Encrypted columns must be of a binary type. ' .
+                throw new Exception(
+                    'Encrypted columns must be of a binary type. ' .
                     "Encrypted column '{$column->getName()}' of type '{$column->getType()}' found. " .
-                    'Revise your schema.');
+                    'Revise your schema.',
+                );
             }
 
             $realColumnName = $this->createRealColumnName($columnName, $table->getName());
@@ -70,6 +81,8 @@ class EncryptionBehavior extends Behavior
     /**
      * @param string $script
      *
+     * @throws \Exception If the column in not found in the columns list of table.
+     *
      * @return void
      */
     public function objectFilter(string &$script): void
@@ -80,7 +93,14 @@ class EncryptionBehavior extends Behavior
 
         foreach ($columnNames as $columnName) {
             $isSearchable = $this->isSearchable($columnName, $searchableColumnNames);
-            $columnPhpName = $table->getColumn($columnName)->getPhpName();
+
+            $column = $table->getColumn($columnName);
+
+            if (!$column) {
+                throw new Exception('The column with the "$columnName" name is not found. Revise your schema.');
+            }
+
+            $columnPhpName = $column->getPhpName();
 
             $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable);
             $this->addDecryptionToGetter($script, $columnPhpName);
@@ -170,7 +190,7 @@ EOT;
     }
 
     /**
-     * @return array<string>
+     * @return array<mixed>
      */
     protected function getColumnNames(): array
     {
@@ -178,7 +198,7 @@ EOT;
     }
 
     /**
-     * @return array<string>
+     * @return array<mixed>
      */
     protected function getSearchableColumnNames(): array
     {
@@ -188,7 +208,7 @@ EOT;
     /**
      * @param string $prefix
      *
-     * @return array
+     * @return array<mixed>
      */
     protected function getParameterValuesByPrefix(string $prefix): array
     {
@@ -215,7 +235,7 @@ EOT;
 
     /**
      * @param string $columnName
-     * @param array $searchableColumnNames
+     * @param array<string> $searchableColumnNames
      *
      * @return bool
      */
