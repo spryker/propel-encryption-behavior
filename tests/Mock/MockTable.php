@@ -1,34 +1,60 @@
 <?php
 
+/**
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
 class MockTable
 {
-    /** @var  array */
+    /**
+     * @var array<mixed>
+     */
     protected $columns;
 
-    public function __construct($columns)
+    /**
+     * @param array<mixed> $columns
+     */
+    public function __construct(array $columns)
     {
         $this->columns = $columns;
     }
 
-    public function getColumn($columnName)
+    /**
+     * @param string $columnName
+     *
+     * @return mixed
+     */
+    public function getColumn(string $columnName)
     {
         return $this->columns[$columnName];
     }
 
-    public function getColumnByPhpName($columnName)
+    /**
+     * @param string $columnName
+     *
+     * @return mixed
+     */
+    public function getColumnByPhpName(string $columnName)
     {
         return $this->columns[$columnName];
     }
 
-    public function getColumns()
+    /**
+     * @return array<mixed>
+     */
+    public function getColumns(): array
     {
         return $this->columns;
     }
 
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
-        return "table_name";
+        return 'table_name';
     }
 }

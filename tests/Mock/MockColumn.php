@@ -1,9 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: jschilz
- * Date: 1/29/2016
- * Time: 2:55 PM
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
  */
 
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
@@ -12,31 +10,54 @@ use Propel\Generator\Model\PropelTypes;
 
 class MockColumn
 {
+    /**
+     * @var string
+     */
     protected $phpName;
+
+    /**
+     * @var string
+     */
     protected $type;
 
-    public function __construct($phpName, $type)
+    /**
+     * @param string $phpName
+     * @param string $type
+     */
+    public function __construct(string $phpName, string $type)
     {
         $this->phpName = $phpName;
         $this->type = $type;
     }
 
-    public function getPhpName()
+    /**
+     * @return string
+     */
+    public function getPhpName(): string
     {
         return $this->phpName;
     }
 
-    public function getType()
+    /**
+     * @return string
+     */
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->phpName;
     }
 
-    public function isLobType()
+    /**
+     * @return bool
+     */
+    public function isLobType(): bool
     {
         return PropelTypes::isLobType($this->getType());
     }

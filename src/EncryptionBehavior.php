@@ -7,6 +7,7 @@
 
 namespace Spryker\PropelEncryptionBehavior;
 
+use Exception;
 use Propel\Generator\Model\Behavior;
 
 class EncryptionBehavior extends Behavior
@@ -21,9 +22,9 @@ class EncryptionBehavior extends Behavior
     /**
      * Multiple encrypted columns in the same table is OK.
      *
-     * @return boolean
+     * @return bool
      */
-    public function allowMultiple()
+    public function allowMultiple(): bool
     {
         return true;
     }
@@ -31,15 +32,15 @@ class EncryptionBehavior extends Behavior
     /**
      * @param string $script
      *
-     * @return void
-     *
      * @throws \Exception If the schema specifies encryption on fields which are not
      *                    VARBINARY.
+     *
+     * @return void
      */
-    public function tableMapFilter(&$script)
+    public function tableMapFilter(string &$script): void
     {
         if (static::encryptedColumnsDeclarationExists($script) === false) {
-            $insertLocation = strpos($script, ";", strpos($script, "const TABLE_NAME")) + 1;
+            $insertLocation = strpos($script, ';', strpos($script, 'const TABLE_NAME')) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
@@ -52,9 +53,9 @@ class EncryptionBehavior extends Behavior
             $column = $table->getColumn($columnName);
 
             if ($column->isLobType() === false) {
-                throw new \Exception("Encrypted columns must be of a binary type. " .
+                throw new Exception('Encrypted columns must be of a binary type. ' .
                     "Encrypted column '{$column->getName()}' of type '{$column->getType()}' found. " .
-                    "Revise your schema.");
+                    'Revise your schema.');
             }
 
             $realColumnName = $this->createRealColumnName($columnName, $table->getName());
@@ -71,7 +72,7 @@ class EncryptionBehavior extends Behavior
      *
      * @return void
      */
-    public function objectFilter(&$script)
+    public function objectFilter(string &$script): void
     {
         $columnNames = $this->getColumnNames();
         $searchableColumnNames = $this->getSearchableColumnNames();
@@ -91,9 +92,9 @@ class EncryptionBehavior extends Behavior
      *
      * @return void
      */
-    public function queryFilter(&$script)
+    public function queryFilter(string &$script): void
     {
-        if (strpos($script, "addUsingOperator") !== false) {
+        if (strpos($script, 'addUsingOperator') !== false) {
             return;
         }
 
@@ -134,7 +135,7 @@ EOT;
             $script,
             $useString,
             strrpos($script, '}') - 1,
-            0
+            0,
         );
     }
 
@@ -144,7 +145,7 @@ EOT;
      *
      * @return void
      */
-    public static function insertEncryptedColumnName(&$script, $realColumnName)
+    public static function insertEncryptedColumnName(string &$script, string $realColumnName): void
     {
         $insertContent = "\n            '$realColumnName', ";
 
@@ -158,7 +159,7 @@ EOT;
      *
      * @return void
      */
-    public static function insertSearchableEncryptedColumnName(&$script, $realColumnName)
+    public static function insertSearchableEncryptedColumnName(string &$script, string $realColumnName): void
     {
         $insertContent = "\n            '$realColumnName', ";
 
@@ -169,7 +170,7 @@ EOT;
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     protected function getColumnNames(): array
     {
@@ -177,7 +178,7 @@ EOT;
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     protected function getSearchableColumnNames(): array
     {
@@ -197,6 +198,7 @@ EOT;
                 $parameterValues[] = $parameterValue;
             }
         }
+
         return $parameterValues;
     }
 
@@ -215,13 +217,14 @@ EOT;
      * @param string $columnName
      * @param array $searchableColumnNames
      *
-     * @return boolean
+     * @return bool
      */
     protected function isSearchable(string $columnName, array $searchableColumnNames = []): bool
     {
         $searchableParameter = $this->getParameter('searchable');
 
-        if ($searchableParameter === true
+        if (
+            $searchableParameter === true
             || strtolower($searchableParameter) === 'true'
             || array_search($columnName, $searchableColumnNames) !== false
         ) {
@@ -234,7 +237,7 @@ EOT;
     /**
      * @param string $script
      *
-     * @return boolean
+     * @return bool
      */
     protected static function encryptedColumnsDeclarationExists(string $script): bool
     {
@@ -273,14 +276,13 @@ EOT;
             $script,
             $useString,
             strrpos($script, '}') - 1,
-            0
+            0,
         );
-
     }
 
     /**
-     * @param string  $script
-     * @param integer $position
+     * @param string $script
+     * @param int $position
      *
      * @return void
      */
@@ -316,11 +318,11 @@ EOT;
     {
         $setterLocation = strpos($script, "set$columnPhpName");
 
-        $start = strpos($script, "(", $setterLocation) + 1;
-        $length = strpos($script, ")", $setterLocation) - $start;
+        $start = strpos($script, '(', $setterLocation) + 1;
+        $length = strpos($script, ')', $setterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
-        $encryptionMethod = $isSearchable ? "deterministicEncrypt" : "encrypt";
+        $encryptionMethod = $isSearchable ? 'deterministicEncrypt' : 'encrypt';
         $content = <<<EOT
 
         // Encrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.
@@ -328,7 +330,7 @@ EOT;
 
 EOT;
 
-        $insertionStart = strpos($script, "{", $setterLocation) + 1;
+        $insertionStart = strpos($script, '{', $setterLocation) + 1;
         $script = substr_replace($script, $content, $insertionStart, 0);
     }
 
@@ -342,13 +344,12 @@ EOT;
     {
         $getterLocation = strpos($script, "get$columnPhpName");
 
-        $start = strpos($script, "return", $getterLocation) + 7;
-        $length = strpos($script, ";", $getterLocation) - $start;
+        $start = strpos($script, 'return', $getterLocation) + 7;
+        $length = strpos($script, ';', $getterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
-        $insertionStart = strpos($script, "return", $getterLocation);
-        $insertionLength = strpos($script, ";", $insertionStart) - $insertionStart + 1;
-
+        $insertionStart = strpos($script, 'return', $getterLocation);
+        $insertionLength = strpos($script, ';', $insertionStart) - $insertionStart + 1;
 
         $content = <<<EOT
 // Decrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.

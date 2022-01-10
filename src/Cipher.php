@@ -7,11 +7,19 @@
 
 namespace Spryker\PropelEncryptionBehavior;
 
+use Exception;
+
 class Cipher
 {
-    const IV_SIZE = 16;
+    /**
+     * @var int
+     */
+    public const IV_SIZE = 16;
 
-    const ENCRYPTION_METHOD = "aes-256-cbc";
+    /**
+     * @var string
+     */
+    public const ENCRYPTION_METHOD = 'aes-256-cbc';
 
     /**
      * @var \Spryker\PropelEncryptionBehavior\Cipher
@@ -26,7 +34,7 @@ class Cipher
     /**
      * @param string $passphrase
      */
-    protected function __construct($passphrase)
+    protected function __construct(string $passphrase)
     {
         $this->passphrase = $passphrase;
     }
@@ -44,7 +52,7 @@ class Cipher
             return $string;
         }
 
-        $iv = random_bytes(self::IV_SIZE);
+        $iv = random_bytes(static::IV_SIZE);
 
         return $this->doEncrypt($string, $iv);
     }
@@ -76,7 +84,7 @@ class Cipher
             return $string;
         }
 
-        $iv = str_repeat("0", self::IV_SIZE);
+        $iv = str_repeat('0', static::IV_SIZE);
 
         // prevent second encryption during ModelCriteria::findOneOrCreate()
         if (strpos($string, $iv) === 0) {
@@ -94,7 +102,7 @@ class Cipher
      */
     protected function doEncrypt(string $string, string $iv): string
     {
-        return $iv.openssl_encrypt($string, self::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
+        return $iv . openssl_encrypt($string, static::ENCRYPTION_METHOD, $this->passphrase, 0, $iv);
     }
 
     /**
@@ -106,22 +114,21 @@ class Cipher
      */
     public function decrypt(string $encryptedMessage): string
     {
-        $iv = substr($encryptedMessage, 0, self::IV_SIZE);
+        $iv = substr($encryptedMessage, 0, static::IV_SIZE);
 
         return openssl_decrypt(
-            substr($encryptedMessage, self::IV_SIZE),
-            self::ENCRYPTION_METHOD,
+            substr($encryptedMessage, static::IV_SIZE),
+            static::ENCRYPTION_METHOD,
             $this->passphrase,
             0,
-            $iv
+            $iv,
         );
-
     }
 
     /**
      * @param resource $encryptedStream
      *
-     * @return null|string
+     * @return string|null
      */
     public function decryptStream($encryptedStream): ?string
     {
@@ -135,37 +142,37 @@ class Cipher
     /**
      * @param string $passphrase The passphrase to be used to encrypt/decrypt data.
      *
-     * @return void
-     *
      * @throws \Exception If you attempt to initialize the cipher more than one time
      *                    in a page-load via ::createInstance.
+     *
+     * @return void
      */
     public static function createInstance(string $passphrase): void
     {
-        if (self::$instance !== null) {
-            throw new \Exception(
+        if (static::$instance !== null) {
+            throw new Exception(
                 'Cipher::createInstance() called more than once. ' .
-                'Only one cipher instance may be created. '
+                'Only one cipher instance may be created. ',
             );
         }
-        self::$instance = new static($passphrase);
+        static::$instance = new static($passphrase);
     }
 
     /**
-     * @return Cipher
-     *
      * @throws \Exception if ::getInstance is called before cipher is initialized via ::createInstance.
+     *
+     * @return self
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            throw new \Exception(
+        if (static::$instance === null) {
+            throw new Exception(
                 'Cipher::getInstance() called before initialization. ' .
-                'Call Cipher::createInstance($passphrase) before ::getInstance().'
+                'Call Cipher::createInstance($passphrase) before ::getInstance().',
             );
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -173,6 +180,6 @@ class Cipher
      */
     public static function resetInstance(): void
     {
-        self::$instance = null;
+        static::$instance = null;
     }
 }

@@ -1,10 +1,16 @@
 <?php
 
+/**
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
 namespace Spryker\PropelEncryptionBehavior\Test;
 
+use Exception;
+use PHPUnit\Framework\TestCase;
 use Spryker\PropelEncryptionBehavior\Test\Mock\MockColumn;
 use Spryker\PropelEncryptionBehavior\Test\Mock\MockEncryptionBehavior;
-use PHPUnit\Framework\TestCase;
 
 class BehaviorTest extends TestCase
 {
@@ -205,11 +211,11 @@ EOT;
     public function setUp(): void
     {
         $this->columns = [
-            "VarBinaryColumn1" => new MockColumn("VarBinaryColumn1", "VARBINARY"),
-            "VarBinaryColumn2" => new MockColumn("VarBinaryColumn2", "VARBINARY"),
-            "BlobColumn" => new MockColumn("BlobColumn", "BLOB"),
-            "LongVarBinaryColumn" => new MockColumn("BlobColumn", "LONGVARBINARY"),
-            "NotVarBinaryColumn" => new MockColumn("NotVarBinaryColumn", "NOTVARBINARY"),
+            'VarBinaryColumn1' => new MockColumn('VarBinaryColumn1', 'VARBINARY'),
+            'VarBinaryColumn2' => new MockColumn('VarBinaryColumn2', 'VARBINARY'),
+            'BlobColumn' => new MockColumn('BlobColumn', 'BLOB'),
+            'LongVarBinaryColumn' => new MockColumn('BlobColumn', 'LONGVARBINARY'),
+            'NotVarBinaryColumn' => new MockColumn('NotVarBinaryColumn', 'NOTVARBINARY'),
         ];
 
         parent::setUp();
@@ -223,22 +229,20 @@ EOT;
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "VarBinaryColumn1",
-                'searchable' => false
-            ]
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
         );
 
         $behavior->objectFilter($this->objectFilterInput);
 
         $this->assertEquals(
             $this->normalizeWhitespace($this->objectFilterExpected),
-            $this->normalizeWhitespace($this->objectFilterInput)
+            $this->normalizeWhitespace($this->objectFilterInput),
         );
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testMapFilter(): void
@@ -246,60 +250,58 @@ EOT;
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "VarBinaryColumn1",
-                'searchable' => false
-            ]
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
         );
 
         // Run table map filter once, and an encrypted columns declaration is created
         $behavior->tableMapFilter($this->mapFilterInput);
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpected),
-            $this->normalizeWhitespace($this->mapFilterInput)
+            $this->normalizeWhitespace($this->mapFilterInput),
         );
 
         // Run it twice, and the new column name is inserted beside the old
         $behavior->tableMapFilter($this->mapFilterInput);
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpectedSecond),
-            $this->normalizeWhitespace($this->mapFilterInput)
+            $this->normalizeWhitespace($this->mapFilterInput),
         );
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testBehaviorExceptionOnNonVarBinaryColumn(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Encrypted columns must be of a binary type. Encrypted column \'NotVarBinaryColumn\' of type \'NOTVARBINARY\' found. Revise your schema.');
 
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "NotVarBinaryColumn",
+                'column_name' => 'NotVarBinaryColumn',
                 'searchable' => false,
-            ]
+            ],
         );
 
         // Run table map filter once, and an encrypted columns declaration is created
-        $input = "";
+        $input = '';
         $behavior->tableMapFilter($input);
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      */
-    protected function normalizeWhitespace($string): string
+    protected function normalizeWhitespace(string $string): string
     {
         $string = trim($string);
-        $string = str_replace("\r", "", $string);
+        $string = str_replace("\r", '', $string);
 
-        $string = join("\n", array_map("rtrim", explode("\n", $string)));
+        $string = implode("\n", array_map('rtrim', explode("\n", $string)));
 
         return $string;
     }
