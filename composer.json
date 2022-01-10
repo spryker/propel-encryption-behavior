@@ -1,7 +1,7 @@
 {
   "name": "spryker/propel-encryption-behavior",
   "description": "Propel Behavior for seamless encryption/decryption of data columns",
-  "type": "library",
+  "type" : "propel-behavior",
   "license": "MIT",
   "authors": [
     {
@@ -34,7 +34,9 @@
   "extra": {
     "branch-alias": {
       "dev-master": "1.x-dev"
-    }
+    },
+    "name": "encryption",
+    "class": "\\Spryker\\PropelEncryptionBehavior\\EncryptionBehavior"
   },
   "scripts": {
     "test": "phpunit --configuration phpunit.xml tests",
