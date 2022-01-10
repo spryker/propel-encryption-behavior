@@ -8,8 +8,6 @@ use Spryker\PropelEncryptionBehavior\Cipher;
 class CipherTest extends TestCase
 {
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testGetInstanceBeforeCreate():void
@@ -21,8 +19,6 @@ class CipherTest extends TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testCipherCreation(): void
@@ -33,8 +29,6 @@ class CipherTest extends TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testCreateInstanceTwice(): void
@@ -46,8 +40,6 @@ class CipherTest extends TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testEncrypt(): void
@@ -62,13 +54,10 @@ class CipherTest extends TestCase
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testEncryptDecrypt(): void
     {
-
         $plainText = "plaintext";
         $encryptedText = Cipher::getInstance()->encrypt($plainText);
 
@@ -77,5 +66,20 @@ class CipherTest extends TestCase
 
         // Assert that the encrypted text is equal to the plain text when decrypted
         $this->assertEquals($plainText, Cipher::getInstance()->decrypt($encryptedText));
+    }
+
+    public function testResetInstance(): void
+    {
+        // Arrange
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('called before initialization.');
+
+        // Assert
+        $cipherInstance = Cipher::getInstance();
+        $this->assertInstanceOf(Cipher::class, $cipherInstance);
+
+        // Act
+        Cipher::resetInstance();
+        Cipher::getInstance();
     }
 }

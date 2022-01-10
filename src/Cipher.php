@@ -167,4 +167,12 @@ class Cipher
 
         return self::$instance;
     }
+
+    /**
+     * @return void
+     */
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
+    }
 }

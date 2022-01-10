@@ -37,12 +37,11 @@
     }
   },
   "scripts": {
-    "test": "phpunit",
-    "test-coverage": "phpunit --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
+    "test": "phpunit --configuration tests/phpunit.xml tests",
+    "cs-check": "phpcs -p -s src/ tests/",
+    "cs-fix": "phpcbf -p src/ tests/",
     "stan": "vendor/bin/phpstan.phar analyse",
     "lowest": "validate-prefer-lowest",
-    "lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json",
-    "cs-check": "vendor/bin/phpcs",
-    "cs-fix": "vendor/bin/phpcbf"
+    "lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json"
   }
 }

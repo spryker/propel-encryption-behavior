@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Composer validate
-        run: composer validate
+        run: composer lowest
 
       - name: Composer version
         run: composer --version
@@ -50,6 +50,6 @@ jobs:
       - name: Composer install
         run: composer install
 
-      - name: PHPUnit run
-        run: vendor/bin/phpunit --configuration tests/phpunit.xml tests
+      - name: Run tests
+        run: composer test
 
