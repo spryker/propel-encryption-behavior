@@ -37,7 +37,7 @@
     }
   },
   "scripts": {
-    "test": "phpunit --configuration tests/phpunit.xml tests",
+    "test": "phpunit --configuration phpunit.xml tests",
     "cs-check": "phpcs -p -s src/ tests/",
     "cs-fix": "phpcbf -p src/ tests/",
     "stan": "phpstan.phar analyse",
