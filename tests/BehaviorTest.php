@@ -135,7 +135,7 @@ class ApplicationTableMap extends TableMap
     const DATABASE_NAME = 'scholarship_application';
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedColumnName($columnName)
     {
@@ -144,7 +144,7 @@ class ApplicationTableMap extends TableMap
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedSearchableColumnName($columnName)
     {
@@ -187,7 +187,7 @@ class ApplicationTableMap extends TableMap
     const DATABASE_NAME = 'scholarship_application';
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedColumnName($columnName)
     {
@@ -196,7 +196,7 @@ class ApplicationTableMap extends TableMap
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedSearchableColumnName($columnName)
     {
