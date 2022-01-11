@@ -32,7 +32,7 @@ class EncryptionBehavior extends Behavior
     /**
      * @param string $script
      *
-     * @throws \Exception If the schema specifies encryption on fields which are not VARBINARY.
+     * @throws \Exception If the schema specifies encryption on fields which are not BLOB/LOB.
      *
      * @return void
      */

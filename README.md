@@ -8,7 +8,7 @@
 [![License](https://poser.pugx.org/spryker/propel-encryption-behavior/license)](https://packagist.org/packages/spryker/propel-encryption-behavior)
 
 Seamlessly encrypt/decrypt Propel2 data fields. This library is a *plugin* for the [Propel2 ORM framework](http://propelorm.org/).
-Also, this library was forked from [Athens\Encryption](https://github.com/AthensFramework/Encryption). 
+The library is a fork of [Athens\Encryption](https://github.com/AthensFramework/Encryption). 
 
 For example:
 
@@ -51,6 +51,14 @@ For example:
 
     echo $o->getMySecretData();
     // "Some data that will be encrypted."
+
+// If you need to use different passphrase in different queries:
+
+    use Spryker\PropelEncryptionBehavior\Cipher;
+    Cipher::resetInstance();
+    Cipher::createInstance("mysecretpassphrase_2");
+    
+    ...(read or write data with another passphrase)
 
 ```
 
