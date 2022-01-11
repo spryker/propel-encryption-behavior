@@ -40,8 +40,8 @@
   },
   "scripts": {
     "test": "phpunit --configuration phpunit.xml tests",
-    "cs-check": "phpcs -p -s src/ tests/",
-    "cs-fix": "phpcbf -p src/ tests/",
+    "cs-check": "phpcs -p -s --standard=vendor/spryker/code-sniffer/SprykerStrict/ruleset.xml src/ tests/",
+    "cs-fix": "phpcbf -p --standard=vendor/spryker/code-sniffer/SprykerStrict/ruleset.xml src/ tests/",
     "stan": "phpstan analyse",
     "lowest": "validate-prefer-lowest",
     "lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json"
