@@ -118,16 +118,16 @@ class EncryptionBehavior extends Behavior
     {
         $tableMap = $this->getTableMap();
 
-        /** @var boolean $isCriterion */
+        /** @var bool $isCriterion */
         $isCriterion = $p1 instanceof \Propel\Runtime\ActiveQuery\Criterion\AbstractCriterion;
 
         /** @var string $columnName */
         $columnName = $isCriterion ? $p1->getTable()->getName() . $p1->getColumn() : $p1;
 
-        /** @var boolean $isEncryptedColumn */
+        /** @var bool $isEncryptedColumn */
         $isEncryptedColumn = $tableMap->isEncryptedColumnName($columnName);
 
-        /** @var boolean $isEncryptedSearchableColumn */
+        /** @var bool $isEncryptedSearchableColumn */
         $isEncryptedSearchableColumn =  $tableMap->isEncryptedSearchableColumnName($columnName);
 
         if ($isEncryptedColumn) {
@@ -269,7 +269,7 @@ EOT;
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedColumnName($columnName)
     {
@@ -278,7 +278,7 @@ EOT;
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedSearchableColumnName($columnName)
     {
