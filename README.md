@@ -1,4 +1,4 @@
-# Spryker - PropelEncryptionBehaviour
+# Spryker - PropelEncryptionBehavior
 
 [![Build Status](https://github.com/spryker/propel-encryption-behavior/workflows/CI/badge.svg?branch=master)](https://github.com/spryker/propel-encryption-behavior/actions?query=workflow%3ACI+branch%3Amaster)
 [![codecov](https://codecov.io/gh/spryker/propel-encryption-behavior/branch/master/graph/badge.svg?token=L1thFB9nOG)](https://codecov.io/gh/spryker/propel-encryption-behavior)
