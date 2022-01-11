@@ -42,7 +42,7 @@
     "test": "phpunit --configuration phpunit.xml tests",
     "cs-check": "phpcs -p -s src/ tests/",
     "cs-fix": "phpcbf -p src/ tests/",
-    "stan": "phpstan.phar analyse",
+    "stan": "phpstan analyse",
     "lowest": "validate-prefer-lowest",
     "lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json"
   }

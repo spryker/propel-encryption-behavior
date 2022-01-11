@@ -55,3 +55,9 @@ jobs:
 
       - name: Validate prefer lowest
         run: composer lowest
+
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyse --error-format=github
+
+      - name: Run phpcs
+        run: composer cs-check
