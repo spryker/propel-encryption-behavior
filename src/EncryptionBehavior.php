@@ -362,6 +362,7 @@ EOT;
         $length = strpos($script, ';', $getterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
+        /** @var int $insertionStart */
         $insertionStart = strpos($script, 'return', $getterLocation);
         $insertionLength = strpos($script, ';', $insertionStart) - $insertionStart + 1;
 

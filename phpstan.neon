@@ -5,4 +5,3 @@ parameters:
     ignoreErrors:
         - '#Unsafe usage of new static\(\).#'
         - '#Parameter \#3 \$offset of function strpos expects int, int\<0, max\>\|false given.#'
-        - '#Parameter \#3 \$offset of function substr_replace expects array\|int, int\<0, max\>\|false given.#'
