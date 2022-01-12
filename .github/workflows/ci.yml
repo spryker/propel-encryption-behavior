@@ -47,6 +47,12 @@ jobs:
       - name: Composer install
         run: composer install
 
+      - name: Run phpstan
+        run: vendor/bin/phpstan analyse --error-format=github
+
+      - name: Run phpcs
+        run: composer cs-check
+
       - name: Composer prefer lowest
         run: composer lowest-setup
 
@@ -55,9 +61,3 @@ jobs:
 
       - name: Validate prefer lowest
         run: composer lowest
-
-      - name: Run phpstan
-        run: vendor/bin/phpstan analyse --error-format=github
-
-      - name: Run phpcs
-        run: composer cs-check
