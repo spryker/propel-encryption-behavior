@@ -24,7 +24,7 @@ For example:
 
         <behavior name="encryption">
             <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="column_name_searchable_1" value="my_searchable_data" />
+            <parameter name="searchable_column_name_1" value="my_searchable_data" />
             <parameter name="searchable" value="false" />
         </behavior>
     </table>
@@ -79,7 +79,9 @@ Use
 
 This client library provides a `Cipher` class and one Propel2 Behavior class.
 
-To designate a field as encrypted in your Propel schema, set its type as `VARBINARY`, `LONGVARBINARY` or `BLOB` and include the `encryption` behavior. You may include multiple columns in the `encryption` behavior:
+To designate a field as encrypted in your Propel schema, set its type as `VARBINARY`, `LONGVARBINARY` or `BLOB` and include the `encryption` behavior.
+Parameters that define encrypted columns should contain `column_name_*` prefix in the name attribute.
+You may include multiple columns in the `encryption` behavior:
 
 ```
     <table name="my_class">
@@ -126,7 +128,7 @@ By default all encrypted columns are not searchable. It's possible to make all e
         </behavior>
     </table>
 ```
-It's also possible to make a particular column as searchable using `column_name_searchable_*` prefix
+It's also possible to make a particular column as searchable using `searchable_column_name_*` prefix
 ```
     <table name="my_class">
         <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
@@ -136,7 +138,7 @@ It's also possible to make a particular column as searchable using `column_name_
 
         <behavior name="encryption">
             <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="column_name_searchable_1" value="my_secret_searchable_data" />
+            <parameter name="searchable_column_name_1" value="my_secret_searchable_data" />
         </behavior>
     </table>
 ```

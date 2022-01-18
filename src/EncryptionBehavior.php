@@ -196,7 +196,7 @@ EOT;
      */
     protected function getSearchableColumnNames(): array
     {
-        return $this->getParameterValuesByPrefix('column_name_searchable');
+        return $this->getParameterValuesByPrefix('searchable_column_name');
     }
 
     /**
@@ -208,7 +208,9 @@ EOT;
     {
         $parameterValues = [];
         foreach ($this->getParameters() as $parameterName => $parameterValue) {
-            if (strpos($parameterName, $prefix) !== false && !empty($parameterValue)) {
+            $prefixPosition = strpos($parameterName, $prefix);
+
+            if ($prefixPosition !== false && $prefixPosition === 0 && !empty($parameterValue)) {
                 $parameterValues[] = $parameterValue;
             }
         }
