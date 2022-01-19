@@ -340,7 +340,10 @@ EOT;
         $setterLocation = strpos($script, "set$columnPhpName");
 
         if ($setterLocation === false) {
-            throw new Exception("The 'set$columnPhpName' method name was not found in the script.");
+            throw new Exception(sprintf(
+                'The "%s" method was not found in the script.',
+                "set$columnPhpName",
+            ));
         }
 
         $start = strpos($script, '(', $setterLocation) + 1;
@@ -372,7 +375,10 @@ EOT;
         $getterLocation = strpos($script, "get$columnPhpName");
 
         if ($getterLocation === false) {
-            throw new Exception("The 'get$columnPhpName' method name was not found in the script.");
+            throw new Exception(sprintf(
+                'The "%s" method was not found in the script.',
+                "get$columnPhpName",
+            ));
         }
 
         $start = strpos($script, 'return', $getterLocation) + 7;
