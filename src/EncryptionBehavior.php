@@ -39,7 +39,9 @@ class EncryptionBehavior extends Behavior
     public function tableMapFilter(string &$script): void
     {
         if (static::encryptedColumnsDeclarationExists($script) === false) {
-            $insertLocation = strpos($script, ';', strpos($script, 'const TABLE_NAME')) + 1;
+            /** @var int<0, max> $offset */
+            $offset = strpos($script, 'const TABLE_NAME');
+            $insertLocation = strpos($script, ';', $offset) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
@@ -332,9 +334,18 @@ EOT;
      */
     protected function addEncryptionToSetter(string &$script, string $columnPhpName, bool $isSearchable): void
     {
+        /** @var int|bool $setterLocation */
         $setterLocation = strpos($script, "set$columnPhpName");
 
+        if ($setterLocation === false || $setterLocation < 0) {
+            throw new Exception("The 'set$columnPhpName' method name was not found in the propel model code.");
+        }
+
+        /** @var int<0, max> $setterLocation */
+
+        /** @var int<0, max> $start */
         $start = strpos($script, '(', $setterLocation) + 1;
+        /** @var int<0, max> $length */
         $length = strpos($script, ')', $setterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
@@ -346,6 +357,7 @@ EOT;
 
 EOT;
 
+        /** @var int<0, max> $insertionStart */
         $insertionStart = strpos($script, '{', $setterLocation) + 1;
         $script = substr_replace($script, $content, $insertionStart, 0);
     }
@@ -358,13 +370,24 @@ EOT;
      */
     protected function addDecryptionToGetter(string &$script, string $columnPhpName): void
     {
+        /** @var int|bool $getterLocation */
         $getterLocation = strpos($script, "get$columnPhpName");
 
+        if ($getterLocation === false || $getterLocation < 0) {
+            throw new Exception("The 'get$columnPhpName' method name was not found in the propel model code.");
+        }
+
+        /** @var int<0, max> $getterLocation */
+
+        /** @var int<0, max> $start */
         $start = strpos($script, 'return', $getterLocation) + 7;
+        /** @var int<0, max> $length */
         $length = strpos($script, ';', $getterLocation) - $start;
         $variableName = substr($script, $start, $length);
 
+        /** @var int<0, max> $insertionStart */
         $insertionStart = strpos($script, 'return', $getterLocation);
+        /** @var int<0, max> $insertionLength */
         $insertionLength = strpos($script, ';', $insertionStart) - $insertionStart + 1;
 
         $content = <<<EOT
@@ -376,6 +399,7 @@ EOT;
         return \$fieldValue;
 EOT;
 
+        /** @var int $insertionStart */
         $script = substr_replace($script, $content, $insertionStart, $insertionLength);
     }
 }
