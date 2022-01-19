@@ -39,7 +39,13 @@ class EncryptionBehavior extends Behavior
     public function tableMapFilter(string &$script): void
     {
         if (static::encryptedColumnsDeclarationExists($script) === false) {
-            $insertLocation = strpos($script, ';', strpos($script, 'const TABLE_NAME')) + 1;
+            $offset = strpos($script, 'const TABLE_NAME');
+
+            if ($offset === false) {
+                throw new Exception('The definition of constant TABLE_NAME was not found in the propel model code.');
+            }
+
+            $insertLocation = strpos($script, ';', ) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
