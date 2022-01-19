@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validation:
+  validation_php_7-3:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -51,6 +51,54 @@ jobs:
 
       - name: Run phpcs
         run: composer cs-check
+
+      - name: Composer prefer lowest
+        run: composer lowest-setup
+
+      - name: Run tests
+        run: composer test
+
+      - name: Validate prefer lowest
+        run: composer lowest
+  validation_php_8-1:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [
+            '8.1'
+        ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl
+          tools: composer:v2
+
+      - name: Composer get cache directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Composer cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Composer version
+        run: composer --version
+
+      - name: Composer install
+        run: composer install
 
       - name: Composer prefer lowest
         run: composer lowest-setup
