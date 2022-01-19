@@ -12,7 +12,7 @@ use Exception;
 class Cipher
 {
     /**
-     * @var int
+     * @var int<1, max>
      */
     public const IV_SIZE = 16;
 
