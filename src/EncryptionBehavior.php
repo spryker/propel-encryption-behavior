@@ -340,7 +340,7 @@ EOT;
         $setterLocation = strpos($script, "set$columnPhpName");
 
         if ($setterLocation === false) {
-            throw new Exception("The 'set$columnPhpName' method name was not found in the propel model code.");
+            throw new Exception("The 'set$columnPhpName' method name was not found in the script.");
         }
 
         $start = strpos($script, '(', $setterLocation) + 1;
@@ -372,7 +372,7 @@ EOT;
         $getterLocation = strpos($script, "get$columnPhpName");
 
         if ($getterLocation === false) {
-            throw new Exception("The 'get$columnPhpName' method name was not found in the propel model code.");
+            throw new Exception("The 'get$columnPhpName' method name was not found in the script.");
         }
 
         $start = strpos($script, 'return', $getterLocation) + 7;
@@ -382,7 +382,7 @@ EOT;
         $insertionStart = strpos($script, 'return', $getterLocation);
 
         if ($insertionStart === false) {
-            throw new Exception("The return statement in 'get$columnPhpName' method was not found in the propel model code.");
+            throw new Exception("The return statement in 'get$columnPhpName' method was not found in the script.");
         }
 
         $insertionLength = strpos($script, ';', $insertionStart) - $insertionStart + 1;

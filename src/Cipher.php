@@ -44,6 +44,8 @@ class Cipher
      *
      * @param string|null $string Plain-text to encrypt.
      *
+     * @throws \Exception
+     *
      * @return string|null The encrypted string.
      */
     public function encrypt(?string $string): ?string
