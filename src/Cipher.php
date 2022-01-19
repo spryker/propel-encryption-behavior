@@ -12,7 +12,7 @@ use Exception;
 class Cipher
 {
     /**
-     * @var int<1, max>
+     * @var int
      */
     public const IV_SIZE = 16;
 
@@ -50,6 +50,10 @@ class Cipher
     {
         if ($string === null) {
             return $string;
+        }
+
+        if (static::IV_SIZE < 1) {
+            throw new Exception('The length of random string should be bigger than 0.');
         }
 
         $iv = random_bytes(static::IV_SIZE);

@@ -40,12 +40,9 @@ class EncryptionBehavior extends Behavior
     {
         if (static::encryptedColumnsDeclarationExists($script) === false) {
             $offset = strpos($script, 'const TABLE_NAME');
+            $offset = $offset === false ? 0 : $offset;
 
-            if ($offset === false) {
-                throw new Exception('The definition of constant TABLE_NAME was not found in the propel model code.');
-            }
-
-            $insertLocation = strpos($script, ';', ) + 1;
+            $insertLocation = strpos($script, ';', $offset) + 1;
             static::insertEncryptedColumnsDeclaration($script, $insertLocation);
             static::insertEncryptedColumnNameAccessMethods($script);
         }
@@ -334,6 +331,8 @@ EOT;
      * @param string $columnPhpName
      * @param bool $isSearchable
      *
+     * @throws \Exception
+     *
      * @return void
      */
     protected function addEncryptionToSetter(string &$script, string $columnPhpName, bool $isSearchable): void
@@ -363,6 +362,8 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
+     *
+     * @throws \Exception
      *
      * @return void
      */
