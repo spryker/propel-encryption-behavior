@@ -341,7 +341,7 @@ EOT;
 
         if ($setterLocation === false) {
             throw new Exception(sprintf(
-                'The "%s" method was not found in the script.',
+                'The `%s()` method was not found in the script.',
                 "set$columnPhpName",
             ));
         }
@@ -376,7 +376,7 @@ EOT;
 
         if ($getterLocation === false) {
             throw new Exception(sprintf(
-                'The "%s" method was not found in the script.',
+                'The `%s()` method was not found in the script.',
                 "get$columnPhpName",
             ));
         }
@@ -388,7 +388,10 @@ EOT;
         $insertionStart = strpos($script, 'return', $getterLocation);
 
         if ($insertionStart === false) {
-            throw new Exception("The return statement in 'get$columnPhpName' method was not found in the script.");
+            throw new Exception(sprintf(
+                'The return statement in `%s()` method was not found in the script.',
+                "get$columnPhpName",
+            ));
         }
 
         $insertionLength = strpos($script, ';', $insertionStart) - $insertionStart + 1;
