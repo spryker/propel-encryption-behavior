@@ -302,6 +302,27 @@ EOT;
     }
 
     /**
+     * @return void
+     */
+    public function testAllowMultipleReturnsTrue(): void
+    {
+        // Arrange
+        $behavior = new MockEncryptionBehavior(
+            $this->columns,
+            [
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
+        );
+
+        // Act
+        $isAllowMultiple = $behavior->allowMultiple();
+
+        // Assert
+        $this->assertTrue($isAllowMultiple);
+    }
+
+    /**
      * @param string $string
      *
      * @return string

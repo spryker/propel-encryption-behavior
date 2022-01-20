@@ -52,14 +52,9 @@ jobs:
       - name: Run phpcs
         run: composer cs-check
 
-      - name: Composer prefer lowest
-        run: composer lowest-setup
-
       - name: Run tests
         run: composer test
 
-      - name: Validate prefer lowest
-        run: composer lowest
   validation_php_8-1:
     runs-on: ubuntu-18.04
     strategy:
@@ -99,6 +94,38 @@ jobs:
 
       - name: Composer install
         run: composer install
+
+      - name: Run tests
+        run: composer test
+
+  prefer-lowest:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [
+            '7.3'
+        ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl, pdo_mysql
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Composer prefer lowest
         run: composer lowest-setup
