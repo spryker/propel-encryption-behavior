@@ -143,9 +143,3 @@ It's also possible to make a particular column as searchable using `searchable_c
     </table>
 ```
 > **Be aware:** For the searchable columns will be used a fixed IV. It looses data security.
-
-Compatibility
-=============
-
-* PHP >=7.3
-* Propel2
