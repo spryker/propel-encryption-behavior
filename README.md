@@ -18,14 +18,14 @@ For example:
     <table name="my_class">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
 
-        <column name="my_data" type="varchar" size="255" />
-        <column name="my_secret_data" type="BLOB" />
-        <column name="my_searchable_data" type="varbinary" size="255" />
+        <column name="my_data" type="varchar" size="255"/>
+        <column name="my_secret_data" type="BLOB"/>
+        <column name="my_searchable_data" type="varbinary" size="255"/>
 
         <behavior name="encryption">
-            <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="searchable_column_name_1" value="my_searchable_data" />
-            <parameter name="searchable" value="false" />
+            <parameter name="column_name_1" value="my_secret_data"/>
+            <parameter name="searchable_column_name_1" value="my_searchable_data"/>
+            <parameter name="searchable" value="false"/>
         </behavior>
     </table>
 ```
@@ -88,14 +88,14 @@ You may include multiple columns in the `encryption` behavior:
     <table name="my_class">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
 
-        <column name="my_data" type="varchar" size="255" />
+        <column name="my_data" type="varchar" size="255"/>
 
-        <column name="my_secret_data" type="varbinary" size="255" />
-        <column name="my_secret_data2" type="varbinary" size="255" />
+        <column name="my_secret_data" type="varbinary" size="255"/>
+        <column name="my_secret_data2" type="varbinary" size="255"/>
 
         <behavior name="encryption">
-            <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="column_name_2" value="my_secret_data2" />
+            <parameter name="column_name_1" value="my_secret_data"/>
+            <parameter name="column_name_2" value="my_secret_data2"/>
         </behavior>
     </table>
 ```
@@ -120,12 +120,12 @@ By default all encrypted columns are not searchable. It's possible to make all e
 ```xml
     <table name="my_class">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="my_data" type="varchar" size="255" />
-        <column name="my_secret_data" type="varbinary" size="255" />
+        <column name="my_data" type="varchar" size="255"/>
+        <column name="my_secret_data" type="varbinary" size="255"/>
 
         <behavior name="encryption">
-            <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="searchable" value="true" />
+            <parameter name="column_name_1" value="my_secret_data"/>
+            <parameter name="searchable" value="true"/>
         </behavior>
     </table>
 ```
@@ -133,13 +133,13 @@ It's also possible to make a particular column as searchable using `searchable_c
 ```xml
     <table name="my_class">
         <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="my_data" type="VARCHAR" size="255" />
-        <column name="my_secret_data" type="BLOB" />
-        <column name="my_secret_searchable_data" type="VARBINARY" size="255" />
+        <column name="my_data" type="VARCHAR" size="255"/>
+        <column name="my_secret_data" type="BLOB"/>
+        <column name="my_secret_searchable_data" type="VARBINARY" size="255"/>
 
         <behavior name="encryption">
-            <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="searchable_column_name_1" value="my_secret_searchable_data" />
+            <parameter name="column_name_1" value="my_secret_data"/>
+            <parameter name="searchable_column_name_1" value="my_secret_searchable_data"/>
         </behavior>
     </table>
 ```
