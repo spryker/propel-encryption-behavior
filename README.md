@@ -52,7 +52,7 @@ For example:
     echo $o->getMySecretData();
     // "Some data that will be encrypted."
 
-// If you need to use different passphrase in different queries:
+    // If you need to use different passphrases in different queries:
 
     use Spryker\PropelEncryptionBehavior\Cipher;
     Cipher::resetInstance();

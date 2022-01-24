@@ -14,7 +14,7 @@ class Cipher
     /**
      * @var int
      */
-    public const IV_SIZE = 16;
+    public const INITIALIZATION_VECTOR_SIZE = 16;
 
     /**
      * @var string
@@ -54,11 +54,11 @@ class Cipher
             return $string;
         }
 
-        if (static::IV_SIZE < 1) {
+        if (static::INITIALIZATION_VECTOR_SIZE < 1) {
             throw new Exception('The length of random string should be bigger than 0.');
         }
 
-        $iv = random_bytes(static::IV_SIZE);
+        $iv = random_bytes(static::INITIALIZATION_VECTOR_SIZE);
 
         return $this->doEncrypt($string, $iv);
     }
@@ -90,7 +90,7 @@ class Cipher
             return $string;
         }
 
-        $iv = str_repeat('0', static::IV_SIZE);
+        $iv = str_repeat('0', static::INITIALIZATION_VECTOR_SIZE);
 
         // prevent second encryption during ModelCriteria::findOneOrCreate()
         if (strpos($string, $iv) === 0) {
@@ -120,10 +120,10 @@ class Cipher
      */
     public function decrypt(string $encryptedMessage)
     {
-        $iv = substr($encryptedMessage, 0, static::IV_SIZE);
+        $iv = substr($encryptedMessage, 0, static::INITIALIZATION_VECTOR_SIZE);
 
         return openssl_decrypt(
-            substr($encryptedMessage, static::IV_SIZE),
+            substr($encryptedMessage, static::INITIALIZATION_VECTOR_SIZE),
             static::ENCRYPTION_METHOD,
             $this->passphrase,
             0,
@@ -166,7 +166,7 @@ class Cipher
         if (static::$instance !== null) {
             throw new Exception(
                 'Cipher::createInstance() called more than once. ' .
-                'Only one cipher instance may be created. ',
+                'Only one cipher instance may be created.',
             );
         }
 
