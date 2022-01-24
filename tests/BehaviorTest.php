@@ -1,10 +1,16 @@
 <?php
 
-namespace Athens\Encryption\Test;
+/**
+ * MIT License
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
 
-use Athens\Encryption\Test\Mock\MockColumn;
-use Athens\Encryption\Test\Mock\MockEncryptionBehavior;
+namespace Spryker\PropelEncryptionBehavior\Test;
+
+use Exception;
 use PHPUnit\Framework\TestCase;
+use Spryker\PropelEncryptionBehavior\Test\Mock\MockColumn;
+use Spryker\PropelEncryptionBehavior\Test\Mock\MockEncryptionBehavior;
 
 class BehaviorTest extends TestCase
 {
@@ -46,18 +52,18 @@ EOT;
     protected $objectFilterExpected = <<<'EOT'
     public function getVarBinaryColumn1()
     {
-        // Decrypt the variable, per \Athens\Encryption\EncryptionBehavior.
+        // Decrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.
         $fieldValue = $this->test_column;
         if (is_resource($fieldValue) && get_resource_type($fieldValue) === "stream") {
-            $fieldValue = \Athens\Encryption\Cipher::getInstance()->decryptStream($fieldValue);
+            $fieldValue = \Spryker\PropelEncryptionBehavior\Cipher::getInstance()->decryptStream($fieldValue);
         }
         return $fieldValue;
     }
 
     public function setVarBinaryColumn1($v)
     {
-        // Encrypt the variable, per \Athens\Encryption\EncryptionBehavior.
-        $v = \Athens\Encryption\Cipher::getInstance()->encrypt($v);
+        // Encrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.
+        $v = \Spryker\PropelEncryptionBehavior\Cipher::getInstance()->encrypt($v);
 
         // Because BLOB columns are streams in PDO we have to assume that they are
         // always modified when a new value is passed in.  For example, the contents
@@ -105,14 +111,14 @@ class ApplicationTableMap extends TableMap
     use InstancePoolTrait;
 
     /**
-     * Those columns encrypted by Athens/Encryption
+     * Those columns encrypted by Spryker/PropelEncryptionBehavior
      */
     protected static $encryptedColumns = array(
             'table_name.VarBinaryColumn1',
         );
 
     /**
-     * Those columns encrypted deterministically by Athens/Encryption
+     * Those columns encrypted deterministically by Spryker/PropelEncryptionBehavior
      */
     protected static $encryptedSearchableColumns = array(
         );
@@ -129,7 +135,7 @@ class ApplicationTableMap extends TableMap
     const DATABASE_NAME = 'scholarship_application';
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedColumnName($columnName)
     {
@@ -138,7 +144,7 @@ class ApplicationTableMap extends TableMap
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedSearchableColumnName($columnName)
     {
@@ -156,7 +162,7 @@ class ApplicationTableMap extends TableMap
     use InstancePoolTrait;
 
     /**
-     * Those columns encrypted by Athens/Encryption
+     * Those columns encrypted by Spryker/PropelEncryptionBehavior
      */
     protected static $encryptedColumns = array(
             'table_name.VarBinaryColumn1',
@@ -164,7 +170,7 @@ class ApplicationTableMap extends TableMap
         );
 
     /**
-     * Those columns encrypted deterministically by Athens/Encryption
+     * Those columns encrypted deterministically by Spryker/PropelEncryptionBehavior
      */
     protected static $encryptedSearchableColumns = array(
         );
@@ -181,7 +187,7 @@ class ApplicationTableMap extends TableMap
     const DATABASE_NAME = 'scholarship_application';
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedColumnName($columnName)
     {
@@ -190,7 +196,7 @@ class ApplicationTableMap extends TableMap
 
     /**
      * @param $columnName
-     * @return boolean
+     * @return bool
      */
     public static function isEncryptedSearchableColumnName($columnName)
     {
@@ -205,11 +211,11 @@ EOT;
     public function setUp(): void
     {
         $this->columns = [
-            "VarBinaryColumn1" => new MockColumn("VarBinaryColumn1", "VARBINARY"),
-            "VarBinaryColumn2" => new MockColumn("VarBinaryColumn2", "VARBINARY"),
-            "BlobColumn" => new MockColumn("BlobColumn", "BLOB"),
-            "LongVarBinaryColumn" => new MockColumn("BlobColumn", "LONGVARBINARY"),
-            "NotVarBinaryColumn" => new MockColumn("NotVarBinaryColumn", "NOTVARBINARY"),
+            'VarBinaryColumn1' => new MockColumn('VarBinaryColumn1', 'VARBINARY'),
+            'VarBinaryColumn2' => new MockColumn('VarBinaryColumn2', 'VARBINARY'),
+            'BlobColumn' => new MockColumn('BlobColumn', 'BLOB'),
+            'LongVarBinaryColumn' => new MockColumn('BlobColumn', 'LONGVARBINARY'),
+            'NotVarBinaryColumn' => new MockColumn('NotVarBinaryColumn', 'NOTVARBINARY'),
         ];
 
         parent::setUp();
@@ -220,86 +226,113 @@ EOT;
      */
     public function testObjectFilter(): void
     {
+        // Arrange
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "VarBinaryColumn1",
-                'searchable' => false
-            ]
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
         );
 
+        // Act
         $behavior->objectFilter($this->objectFilterInput);
 
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->objectFilterExpected),
-            $this->normalizeWhitespace($this->objectFilterInput)
+            $this->normalizeWhitespace($this->objectFilterInput),
         );
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testMapFilter(): void
     {
+        // Arrange
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "VarBinaryColumn1",
-                'searchable' => false
-            ]
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
         );
 
+        // Act
         // Run table map filter once, and an encrypted columns declaration is created
         $behavior->tableMapFilter($this->mapFilterInput);
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpected),
-            $this->normalizeWhitespace($this->mapFilterInput)
+            $this->normalizeWhitespace($this->mapFilterInput),
         );
 
+        // Act
         // Run it twice, and the new column name is inserted beside the old
         $behavior->tableMapFilter($this->mapFilterInput);
+        // Assert
         $this->assertEquals(
             $this->normalizeWhitespace($this->mapFilterExpectedSecond),
-            $this->normalizeWhitespace($this->mapFilterInput)
+            $this->normalizeWhitespace($this->mapFilterInput),
         );
     }
 
     /**
-     * @throws \Exception
-     *
      * @return void
      */
     public function testBehaviorExceptionOnNonVarBinaryColumn(): void
     {
-        $this->expectException(\Exception::class);
+        // Arrange
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Encrypted columns must be of a binary type. Encrypted column \'NotVarBinaryColumn\' of type \'NOTVARBINARY\' found. Revise your schema.');
 
         $behavior = new MockEncryptionBehavior(
             $this->columns,
             [
-                'column_name' => "NotVarBinaryColumn",
+                'column_name' => 'NotVarBinaryColumn',
                 'searchable' => false,
-            ]
+            ],
         );
 
+        // Act
         // Run table map filter once, and an encrypted columns declaration is created
-        $input = "";
+        $input = '';
         $behavior->tableMapFilter($input);
     }
 
     /**
-     * @param $string
+     * @return void
+     */
+    public function testAllowMultipleReturnsTrue(): void
+    {
+        // Arrange
+        $behavior = new MockEncryptionBehavior(
+            $this->columns,
+            [
+                'column_name' => 'VarBinaryColumn1',
+                'searchable' => false,
+            ],
+        );
+
+        // Act
+        $isAllowMultiple = $behavior->allowMultiple();
+
+        // Assert
+        $this->assertTrue($isAllowMultiple);
+    }
+
+    /**
+     * @param string $string
      *
      * @return string
      */
-    protected function normalizeWhitespace($string): string
+    protected function normalizeWhitespace(string $string): string
     {
         $string = trim($string);
-        $string = str_replace("\r", "", $string);
+        $string = str_replace("\r", '', $string);
 
-        $string = join("\n", array_map("rtrim", explode("\n", $string)));
+        $string = implode("\n", array_map('rtrim', explode("\n", $string)));
 
         return $string;
     }

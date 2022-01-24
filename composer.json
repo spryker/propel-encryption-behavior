@@ -1,26 +1,55 @@
 {
-  "name": "athens/encryption",
+  "name": "spryker/propel-encryption-behavior",
   "description": "Propel Behavior for seamless encryption/decryption of data columns",
-  "autoload": {
-    "classmap": [
-      "src/"
-    ]
-  },
-  "autoload-dev": {
-    "classmap": [
-      "test/"
-    ]
-  },
+  "type" : "propel-behavior",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Spryker Systems GmbH",
+      "homepage": "https://spryker.com"
+    }
+  ],
   "require": {
-    "php": ">=7.1",
-    "propel/propel": "~2.0@dev"
+    "php": ">=7.3",
+    "propel/propel": "~2.0@dev",
+    "ext-openssl": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0"
+    "phpunit/phpunit": "^9.5.0",
+    "spryker/code-sniffer": "@stable",
+    "phpstan/phpstan": "^1.2.0"
   },
-  "type" : "propel-behavior",
+  "autoload": {
+    "psr-4": {
+      "Spryker\\PropelEncryptionBehavior\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Spryker\\PropelEncryptionBehavior\\Test\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    },
     "name": "encryption",
-    "class": "\\Athens\\Encryption\\EncryptionBehavior"
+    "class": "\\Spryker\\PropelEncryptionBehavior\\EncryptionBehavior"
+  },
+  "scripts": {
+    "test": "phpunit --configuration phpunit.xml tests",
+    "test-coverage": "phpunit --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
+    "cs-check": "phpcs -p -s src/ tests/",
+    "cs-fix": "phpcbf -p src/ tests/",
+    "stan": "phpstan analyse",
+    "lowest": "validate-prefer-lowest",
+    "lowest-setup": "composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction && cp composer.json composer.backup && composer require --dev dereuromark/composer-prefer-lowest && mv composer.backup composer.json"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }

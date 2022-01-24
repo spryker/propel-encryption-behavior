@@ -1,12 +1,14 @@
-[![Build Status](https://travis-ci.org/AthensFramework/encryption.svg)](https://travis-ci.org/AthensFramework/encryption)
-[![Code Climate](https://codeclimate.com/github/AthensFramework/encryption/badges/gpa.svg)](https://codeclimate.com/github/AthensFramework/encryption)
-[![Test Coverage](https://codeclimate.com/github/AthensFramework/encryption/badges/coverage.svg)](https://codeclimate.com/github/AthensFramework/encryption/coverage)
-[![Latest Stable Version](https://poser.pugx.org/Athens/Encryption/v/stable)](https://packagist.org/packages/Athens/Encryption)
+# Spryker - PropelEncryptionBehavior
 
-Athens\Encryption
-=============
+[![Build Status](https://github.com/spryker/propel-encryption-behavior/workflows/CI/badge.svg?branch=master)](https://github.com/spryker/propel-encryption-behavior/actions?query=workflow%3ACI+branch%3Amaster)
+[![codecov](https://codecov.io/gh/spryker/propel-encryption-behavior/branch/master/graph/badge.svg?token=L1thFB9nOG)](https://codecov.io/gh/spryker/propel-encryption-behavior)
+[![Latest Stable Version](https://poser.pugx.org/spryker/propel-encryption-behavior/v/stable.svg)](https://packagist.org/packages/spryker/propel-encryption-behavior)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
+[![License](https://poser.pugx.org/spryker/propel-encryption-behavior/license)](https://packagist.org/packages/spryker/propel-encryption-behavior)
 
 Seamlessly encrypt/decrypt Propel2 data fields. This library is a *plugin* for the [Propel2 ORM framework](http://propelorm.org/).
+The library is a fork of [Athens\Encryption](https://github.com/AthensFramework/Encryption). 
 
 For example:
 
@@ -22,7 +24,7 @@ For example:
 
         <behavior name="encryption">
             <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="column_name_searchable_1" value="my_searchable_data" />
+            <parameter name="searchable_column_name_1" value="my_searchable_data" />
             <parameter name="searchable" value="false" />
         </behavior>
     </table>
@@ -30,7 +32,7 @@ For example:
 
 // Before any database queries:
 
-    use Athens\Encryption\Cipher;
+    use Spryker\PropelEncryptionBehavior\Cipher;
     Cipher::createInstance("mysecretpassphrase");
 
 
@@ -50,6 +52,14 @@ For example:
     echo $o->getMySecretData();
     // "Some data that will be encrypted."
 
+    // If you need to use different passphrases in different queries:
+
+    use Spryker\PropelEncryptionBehavior\Cipher;
+    Cipher::resetInstance();
+    Cipher::createInstance("mysecretpassphrase_2");
+    
+    ...(read or write data with another passphrase)
+
 ```
 
 Given the table definition above, the string `"Some data that will be encrypted."` is encrypted in memory before being sent to the database. When we retrieve `MySecretData` later, the ciphertext is decrypted before being returned.
@@ -57,29 +67,21 @@ Given the table definition above, the string `"Some data that will be encrypted.
 Note/Tradeoff
 =============
 
-Athens/Encryption *breaks Propel's native search/find/sort* methods on the encrypted field(s). Because the plain-texts of encrypted fields are not available to the database, no database method of search or sort can operate on these fields. A search or sort can only be accomplished by *retrieving all rows*, decrypting all values, and performing a search/sort on those. If you have many rows and you need to search/sort on encrypted fields, this process may be impractically slow.
+**spryker/propel-encryption-behavior** *breaks Propel's native search/find/sort* methods on the encrypted field(s). Because the plain-texts of encrypted fields are not available to the database, no database method of search or sort can operate on these fields. A search or sort can only be accomplished by *retrieving all rows*, decrypting all values, and performing a search/sort on those. If you have many rows and you need to search/sort on encrypted fields, this process may be impractically slow.
 
 Installation
 ===============
-
-This library is published on packagist. To install using Composer, add the `"Athens/Encryption": "0.1.*"` line to your "require" dependencies:
-
+```BASH
+composer require spryker/propel-encryption-behavior
 ```
-{
-    "require": {
-        "Athens/Encryption": ">=0.1"
-    }
-}
-```
-
-Of course, if you're not using Composer then you can download the repository using the *Download ZIP* button at right.
-
 Use
 ===
 
 This client library provides a `Cipher` class and one Propel2 Behavior class.
 
-To designate a field as encrypted in your Propel schema, set its type as `VARBINARY`, `LONGVARBINARY` or `BLOB` and include the `encryption` behavior. You may include multiple columns in the `encryption` behavior:
+To designate a field as encrypted in your Propel schema, set its type as `VARBINARY`, `LONGVARBINARY` or `BLOB` and include the `encryption` behavior.
+Parameters that define encrypted columns should contain `column_name_*` prefix in the name attribute.
+You may include multiple columns in the `encryption` behavior:
 
 ```
     <table name="my_class">
@@ -126,7 +128,7 @@ By default all encrypted columns are not searchable. It's possible to make all e
         </behavior>
     </table>
 ```
-It's also possible to make a particular column as searchable using `column_name_searchable_*` prefix
+It's also possible to make a particular column as searchable using `searchable_column_name_*` prefix
 ```
     <table name="my_class">
         <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
@@ -136,33 +138,8 @@ It's also possible to make a particular column as searchable using `column_name_
 
         <behavior name="encryption">
             <parameter name="column_name_1" value="my_secret_data" />
-            <parameter name="column_name_searchable_1" value="my_secret_searchable_data" />
+            <parameter name="searchable_column_name_1" value="my_secret_searchable_data" />
         </behavior>
     </table>
 ```
 > **Be aware:** For the searchable columns will be used a fixed IV. It looses data security.
-
-Compatibility
-=============
-
-* PHP >=7.1
-* Propel2
-
-Todo
-====
-
-See GitHub [issue tracker](https://github.com/AthensFramework/encryption/issues/).
-
-
-Getting Involved
-================
-
-Feel free to open pull requests or issues. [GitHub](https://github.com/AthensFramework/encryption) is the canonical location of this project.
-
-Here's the general sequence of events for code contribution:
-
-1. Open an issue in the [issue tracker](https://github.com/AthensFramework/encryption/issues/).
-2. In any order:
-  * Submit a pull request with a **failing** test that demonstrates the issue/feature.
-  * Get acknowledgement/concurrence.
-3. Revise your pull request to pass the test in (2). Include documentation, if appropriate.
