@@ -213,7 +213,7 @@ EOT;
         foreach ($this->getParameters() as $parameterName => $parameterValue) {
             $prefixPosition = strpos($parameterName, $prefix);
 
-            if ($prefixPosition !== false && $prefixPosition === 0 && !empty($parameterValue)) {
+            if ($prefixPosition !== false && $prefixPosition === 0 && $parameterValue) {
                 $parameterValues[] = $parameterValue;
             }
         }
