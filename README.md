@@ -12,7 +12,7 @@ The library is a fork of [Athens\Encryption](https://github.com/AthensFramework/
 
 For example:
 
-```
+```xml
 // schema.xml
 
     <table name="my_class">
@@ -28,15 +28,16 @@ For example:
             <parameter name="searchable" value="false" />
         </behavior>
     </table>
+```
 
-
+```php
 // Before any database queries:
 
     use Spryker\PropelEncryptionBehavior\Cipher;
     Cipher::createInstance("mysecretpassphrase");
 
 
-// In your program:
+// In your application:
 
     $o = new MyClass();
 
@@ -55,11 +56,11 @@ For example:
     // If you need to use different passphrases in different queries:
 
     use Spryker\PropelEncryptionBehavior\Cipher;
+
     Cipher::resetInstance();
     Cipher::createInstance("mysecretpassphrase_2");
     
-    ...(read or write data with another passphrase)
-
+    // ... read or write data with another passphrase
 ```
 
 Given the table definition above, the string `"Some data that will be encrypted."` is encrypted in memory before being sent to the database. When we retrieve `MySecretData` later, the ciphertext is decrypted before being returned.
@@ -83,7 +84,7 @@ To designate a field as encrypted in your Propel schema, set its type as `VARBIN
 Parameters that define encrypted columns should contain `column_name_*` prefix in the name attribute.
 You may include multiple columns in the `encryption` behavior:
 
-```
+```xml
     <table name="my_class">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
 
@@ -103,7 +104,7 @@ Then build your models and database as usual.
 
 Before querying the database, you must initialize the Cipher class with your passphrase:
 
-```
+```php
     // Intialize the cipher
     Cipher::createInstance($my_passphrase);
 ```
@@ -116,7 +117,7 @@ Remember that search/find and sort are now *broken* for `MySecretData` and `MySe
 
 ## Filtering
 By default all encrypted columns are not searchable. It's possible to make all encrypted columns of a table searchable by setting a parameter `searchable` to `true`
-```
+```xml
     <table name="my_class">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="my_data" type="varchar" size="255" />
@@ -129,7 +130,7 @@ By default all encrypted columns are not searchable. It's possible to make all e
     </table>
 ```
 It's also possible to make a particular column as searchable using `searchable_column_name_*` prefix
-```
+```xml
     <table name="my_class">
         <column name="id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="my_data" type="VARCHAR" size="255" />
