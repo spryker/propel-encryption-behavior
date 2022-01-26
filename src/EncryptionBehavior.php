@@ -334,6 +334,8 @@ EOT;
      * @param bool $isSearchable
      * @param bool $hasColumnBlobType
      *
+     * @throws \Exception
+     *
      * @return void
      */
     protected function addEncryptionToSetter(
