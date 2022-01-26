@@ -9,6 +9,8 @@ namespace Spryker\PropelEncryptionBehavior;
 
 use Exception;
 use Propel\Generator\Model\Behavior;
+use Propel\Generator\Model\Column;
+use Propel\Generator\Model\PropelTypes;
 
 class EncryptionBehavior extends Behavior
 {
@@ -99,9 +101,19 @@ class EncryptionBehavior extends Behavior
 
             $columnPhpName = $column->getPhpName();
 
-            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable);
-            $this->addDecryptionToGetter($script, $columnPhpName);
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $this->hasColumnBlobType($column));
+            $this->addDecryptionToGetter($script, $columnPhpName, $this->hasColumnBlobType($column));
         }
+    }
+
+    /**
+     * @param \Propel\Generator\Model\Column $column
+     *
+     * @return bool
+     */
+    protected function hasColumnBlobType(Column $column): bool
+    {
+        return $column->getType() === PropelTypes::BLOB;
     }
 
     /**
@@ -330,13 +342,18 @@ EOT;
      * @param string $script
      * @param string $columnPhpName
      * @param bool $isSearchable
-     *
-     * @throws \Exception
+     * @param bool $hasColumnBlobType
      *
      * @return void
+     *@throws \Exception
+     *
      */
-    protected function addEncryptionToSetter(string &$script, string $columnPhpName, bool $isSearchable): void
-    {
+    protected function addEncryptionToSetter(
+        string &$script,
+        string $columnPhpName,
+        bool $isSearchable,
+        bool $hasColumnBlobType
+    ): void {
         $setterLocation = strpos($script, "set$columnPhpName");
 
         if ($setterLocation === false) {
@@ -345,6 +362,13 @@ EOT;
                 "set$columnPhpName",
             ));
         }
+
+        if ($hasColumnBlobType) {
+            $paramAnnotationLocation = strpos($script, 'param resource', $setterLocation - 300);
+            $script = substr_replace($script, 'param string', $paramAnnotationLocation, 14);
+        }
+
+        $setterLocation = strpos($script, "set$columnPhpName");
 
         $start = strpos($script, '(', $setterLocation) + 1;
         $length = strpos($script, ')', $setterLocation) - $start;
@@ -365,13 +389,17 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
-     *
-     * @throws \Exception
+     * @param bool $hasColumnBlobType
      *
      * @return void
+     *@throws \Exception
+     *
      */
-    protected function addDecryptionToGetter(string &$script, string $columnPhpName): void
-    {
+    protected function addDecryptionToGetter(
+        string &$script,
+        string $columnPhpName,
+        bool $hasColumnBlobType
+    ): void {
         $getterLocation = strpos($script, "get$columnPhpName");
 
         if ($getterLocation === false) {
@@ -380,6 +408,13 @@ EOT;
                 "get$columnPhpName",
             ));
         }
+
+        if ($hasColumnBlobType) {
+            $returnAnnotationLocation = strpos($script, 'return resource', $getterLocation - 50);
+            $script = substr_replace($script, 'return string', $returnAnnotationLocation, 15);
+        }
+
+        $getterLocation = strpos($script, "get$columnPhpName");
 
         $start = strpos($script, 'return', $getterLocation) + 7;
         $length = strpos($script, ';', $getterLocation) - $start;
