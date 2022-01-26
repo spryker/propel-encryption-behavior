@@ -345,7 +345,13 @@ EOT;
         $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
 
         if ($hasColumnBlobType) {
-            $paramAnnotationLocation = strpos($script, 'param resource', $setterLocation - 300);
+            $previousMethodBracketLocation = strrpos(substr($script, 0, $setterLocation), '}');
+
+            if ($previousMethodBracketLocation === false) {
+                throw new Exception('The bracket of the previous method was not found.');
+            }
+
+            $paramAnnotationLocation = strpos($script, 'param resource', $previousMethodBracketLocation);
             $script = substr_replace($script, 'param string', $paramAnnotationLocation, 14);
         }
 
@@ -383,7 +389,13 @@ EOT;
         $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
         if ($hasColumnBlobType) {
-            $returnAnnotationLocation = strpos($script, 'return resource', $getterLocation - 50);
+            $previousMethodBracketLocation = strrpos(substr($script, 0, $getterLocation), '}');
+
+            if ($previousMethodBracketLocation === false) {
+                throw new Exception('The bracket of the previous method was not found.');
+            }
+
+            $returnAnnotationLocation = strpos($script, 'return resource', $previousMethodBracketLocation);
             $script = substr_replace($script, 'return string', $returnAnnotationLocation, 15);
         }
 
@@ -425,7 +437,7 @@ EOT;
      * @return int
      */
     protected function getMethodLocation(
-        string &$script,
+        string $script,
         string $methodName
     ): int {
         $methodLocation = strpos($script, $methodName);
