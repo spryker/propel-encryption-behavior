@@ -100,20 +100,11 @@ class EncryptionBehavior extends Behavior
             }
 
             $columnPhpName = $column->getPhpName();
+            $hasColumnBlobType = $column->getType() === PropelTypes::BLOB;
 
-            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $this->hasColumnBlobType($column));
-            $this->addDecryptionToGetter($script, $columnPhpName, $this->hasColumnBlobType($column));
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $hasColumnBlobType);
+            $this->addDecryptionToGetter($script, $columnPhpName, $hasColumnBlobType);
         }
-    }
-
-    /**
-     * @param \Propel\Generator\Model\Column $column
-     *
-     * @return bool
-     */
-    protected function hasColumnBlobType(Column $column): bool
-    {
-        return $column->getType() === PropelTypes::BLOB;
     }
 
     /**
@@ -354,22 +345,14 @@ EOT;
         bool $isSearchable,
         bool $hasColumnBlobType
     ): void {
-        $setterLocation = strpos($script, "set$columnPhpName");
-
-        if ($setterLocation === false) {
-            throw new Exception(sprintf(
-                'The `%s()` method was not found in the script.',
-                "set$columnPhpName",
-            ));
-        }
+        $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
 
         if ($hasColumnBlobType) {
             $paramAnnotationLocation = strpos($script, 'param resource', $setterLocation - 300);
             $script = substr_replace($script, 'param string', $paramAnnotationLocation, 14);
         }
 
-        $setterLocation = strpos($script, "set$columnPhpName");
-
+        $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
         $start = strpos($script, '(', $setterLocation) + 1;
         $length = strpos($script, ')', $setterLocation) - $start;
         $variableName = substr($script, $start, $length);
@@ -400,21 +383,14 @@ EOT;
         string $columnPhpName,
         bool $hasColumnBlobType
     ): void {
-        $getterLocation = strpos($script, "get$columnPhpName");
-
-        if ($getterLocation === false) {
-            throw new Exception(sprintf(
-                'The `%s()` method was not found in the script.',
-                "get$columnPhpName",
-            ));
-        }
+        $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
         if ($hasColumnBlobType) {
             $returnAnnotationLocation = strpos($script, 'return resource', $getterLocation - 50);
             $script = substr_replace($script, 'return string', $returnAnnotationLocation, 15);
         }
 
-        $getterLocation = strpos($script, "get$columnPhpName");
+        $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
         $start = strpos($script, 'return', $getterLocation) + 7;
         $length = strpos($script, ';', $getterLocation) - $start;
@@ -441,5 +417,27 @@ EOT;
 EOT;
 
         $script = substr_replace($script, $content, $insertionStart, $insertionLength);
+    }
+
+    /**
+     * @param string $script
+     * @param string $methodName
+     *
+     * @return int
+     */
+    protected function getMethodLocation(
+        string &$script,
+        string $methodName
+    ): int {
+        $methodLocation = strpos($script, $methodName);
+
+        if ($methodLocation === false) {
+            throw new Exception(sprintf(
+                'The `%s()` method was not found in the script.',
+                $methodName,
+            ));
+        }
+
+        return $methodLocation;
     }
 }
