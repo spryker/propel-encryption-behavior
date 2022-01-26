@@ -9,7 +9,6 @@ namespace Spryker\PropelEncryptionBehavior;
 
 use Exception;
 use Propel\Generator\Model\Behavior;
-use Propel\Generator\Model\Column;
 use Propel\Generator\Model\PropelTypes;
 
 class EncryptionBehavior extends Behavior
@@ -336,8 +335,6 @@ EOT;
      * @param bool $hasColumnBlobType
      *
      * @return void
-     *@throws \Exception
-     *
      */
     protected function addEncryptionToSetter(
         string &$script,
@@ -374,9 +371,9 @@ EOT;
      * @param string $columnPhpName
      * @param bool $hasColumnBlobType
      *
-     * @return void
-     *@throws \Exception
+     * @throws \Exception
      *
+     * @return void
      */
     protected function addDecryptionToGetter(
         string &$script,
@@ -422,6 +419,8 @@ EOT;
     /**
      * @param string $script
      * @param string $methodName
+     *
+     * @throws \Exception
      *
      * @return int
      */
