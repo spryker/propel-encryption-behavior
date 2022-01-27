@@ -9,6 +9,7 @@ namespace Spryker\PropelEncryptionBehavior;
 
 use Exception;
 use Propel\Generator\Model\Behavior;
+use Propel\Generator\Model\PropelTypes;
 
 class EncryptionBehavior extends Behavior
 {
@@ -98,9 +99,10 @@ class EncryptionBehavior extends Behavior
             }
 
             $columnPhpName = $column->getPhpName();
+            $isBlobTypeColumn = $column->getType() === PropelTypes::BLOB;
 
-            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable);
-            $this->addDecryptionToGetter($script, $columnPhpName);
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $isBlobTypeColumn);
+            $this->addDecryptionToGetter($script, $columnPhpName, $isBlobTypeColumn);
         }
     }
 
@@ -330,22 +332,32 @@ EOT;
      * @param string $script
      * @param string $columnPhpName
      * @param bool $isSearchable
+     * @param bool $isBlobTypeColumn
      *
      * @throws \Exception
      *
      * @return void
      */
-    protected function addEncryptionToSetter(string &$script, string $columnPhpName, bool $isSearchable): void
-    {
-        $setterLocation = strpos($script, "set$columnPhpName");
+    protected function addEncryptionToSetter(
+        string &$script,
+        string $columnPhpName,
+        bool $isSearchable,
+        bool $isBlobTypeColumn
+    ): void {
+        $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
 
-        if ($setterLocation === false) {
-            throw new Exception(sprintf(
-                'The `%s()` method was not found in the script.',
-                "set$columnPhpName",
-            ));
+        if ($isBlobTypeColumn) {
+            $previousMethodBracketLocation = strrpos(substr($script, 0, $setterLocation), '}');
+
+            if ($previousMethodBracketLocation === false) {
+                throw new Exception('The bracket of the previous method was not found.');
+            }
+
+            $paramAnnotationLocation = strpos($script, 'param resource', $previousMethodBracketLocation);
+            $script = substr_replace($script, 'param string', $paramAnnotationLocation, 14);
         }
 
+        $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
         $start = strpos($script, '(', $setterLocation) + 1;
         $length = strpos($script, ')', $setterLocation) - $start;
         $variableName = substr($script, $start, $length);
@@ -365,21 +377,31 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
+     * @param bool $isBlobTypeColumn
      *
      * @throws \Exception
      *
      * @return void
      */
-    protected function addDecryptionToGetter(string &$script, string $columnPhpName): void
-    {
-        $getterLocation = strpos($script, "get$columnPhpName");
+    protected function addDecryptionToGetter(
+        string &$script,
+        string $columnPhpName,
+        bool $isBlobTypeColumn
+    ): void {
+        $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
-        if ($getterLocation === false) {
-            throw new Exception(sprintf(
-                'The `%s()` method was not found in the script.',
-                "get$columnPhpName",
-            ));
+        if ($isBlobTypeColumn) {
+            $previousMethodBracketLocation = strrpos(substr($script, 0, $getterLocation), '}');
+
+            if ($previousMethodBracketLocation === false) {
+                throw new Exception('The bracket of the previous method was not found.');
+            }
+
+            $returnAnnotationLocation = strpos($script, 'return resource', $previousMethodBracketLocation);
+            $script = substr_replace($script, 'return string', $returnAnnotationLocation, 15);
         }
+
+        $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
         $start = strpos($script, 'return', $getterLocation) + 7;
         $length = strpos($script, ';', $getterLocation) - $start;
@@ -406,5 +428,29 @@ EOT;
 EOT;
 
         $script = substr_replace($script, $content, $insertionStart, $insertionLength);
+    }
+
+    /**
+     * @param string $script
+     * @param string $methodName
+     *
+     * @throws \Exception
+     *
+     * @return int
+     */
+    protected function getMethodLocation(
+        string $script,
+        string $methodName
+    ): int {
+        $methodLocation = strpos($script, $methodName);
+
+        if ($methodLocation === false) {
+            throw new Exception(sprintf(
+                'The `%s()` method was not found in the script.',
+                $methodName,
+            ));
+        }
+
+        return $methodLocation;
     }
 }

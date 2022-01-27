@@ -84,6 +84,98 @@ EOT;
     /**
      * @var string
      */
+    protected $objectFilterBlobColumnInput = <<<'EOT'
+    public function __construct()
+    {
+    }
+
+    /**
+     * Get the column value.
+     *
+     * @return resource
+     */
+    public function getBlobColumn()
+    {
+        return $this->test_column;
+    }
+
+    /**
+     * Set the value of column.
+     *
+     * @param resource $v New value
+     * @return $this
+     */
+    public function setBlobColumn($v)
+    {
+        // Because BLOB columns are streams in PDO we have to assume that they are
+        // always modified when a new value is passed in.  For example, the contents
+        // of the stream itself may have changed externally.
+        if (!is_resource($v) && $v !== null) {
+            $this->test_column = fopen('php://memory', 'r+');
+            fwrite($this->test_column, $v);
+            rewind($this->test_column);
+        } else { // it's already a stream
+            $this->test_column = $v;
+        }
+        $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
+
+        return $this;
+    } // setBlobColumn()
+EOT;
+
+    /**
+     * @var string
+     */
+    protected $objectFilterBlobColumnExpected = <<<'EOT'
+    public function __construct()
+    {
+    }
+
+    /**
+     * Get the column value.
+     *
+     * @return string
+     */
+    public function getBlobColumn()
+    {
+        // Decrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.
+        $fieldValue = $this->test_column;
+        if (is_resource($fieldValue) && get_resource_type($fieldValue) === "stream") {
+            $fieldValue = \Spryker\PropelEncryptionBehavior\Cipher::getInstance()->decryptStream($fieldValue);
+        }
+        return $fieldValue;
+    }
+
+    /**
+     * Set the value of column.
+     *
+     * @param string $v New value
+     * @return $this
+     */
+    public function setBlobColumn($v)
+    {
+        // Encrypt the variable, per \Spryker\PropelEncryptionBehavior\EncryptionBehavior.
+        $v = \Spryker\PropelEncryptionBehavior\Cipher::getInstance()->encrypt($v);
+
+        // Because BLOB columns are streams in PDO we have to assume that they are
+        // always modified when a new value is passed in.  For example, the contents
+        // of the stream itself may have changed externally.
+        if (!is_resource($v) && $v !== null) {
+            $this->test_column = fopen('php://memory', 'r+');
+            fwrite($this->test_column, $v);
+            rewind($this->test_column);
+        } else { // it's already a stream
+            $this->test_column = $v;
+        }
+        $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
+
+        return $this;
+    } // setBlobColumn()
+EOT;
+
+    /**
+     * @var string
+     */
     protected $mapFilterInput = <<<EOT
 class ApplicationTableMap extends TableMap
 {
@@ -243,6 +335,121 @@ EOT;
             $this->normalizeWhitespace($this->objectFilterExpected),
             $this->normalizeWhitespace($this->objectFilterInput),
         );
+    }
+
+    /**
+     * @return void
+     */
+    public function testObjectFilterForBlobColumn(): void
+    {
+        // Arrange
+        $behavior = new MockEncryptionBehavior(
+            $this->columns,
+            [
+                'column_name' => 'BlobColumn',
+                'searchable' => false,
+            ],
+        );
+
+        // Act
+        $behavior->objectFilter($this->objectFilterBlobColumnInput);
+
+        // Assert
+        $this->assertEquals(
+            $this->normalizeWhitespace($this->objectFilterBlobColumnExpected),
+            $this->normalizeWhitespace($this->objectFilterBlobColumnInput),
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testObjectFilterForBlobColumnGetterExpectsException(): void
+    {
+        // Arrange
+        $behavior = new MockEncryptionBehavior(
+            $this->columns,
+            [
+                'column_name' => 'BlobColumn',
+                'searchable' => false,
+            ],
+        );
+
+        $script = <<<'EOT'
+    public function getBlobColumn()
+    {
+        return $this->test_column;
+    }
+
+    /**
+     * Set the value of column.
+     *
+     * @param resource $v New value
+     * @return $this
+     */
+    public function setBlobColumn($v)
+    {
+        // Because BLOB columns are streams in PDO we have to assume that they are
+        // always modified when a new value is passed in.  For example, the contents
+        // of the stream itself may have changed externally.
+        if (!is_resource($v) && $v !== null) {
+            $this->test_column = fopen('php://memory', 'r+');
+            fwrite($this->test_column, $v);
+            rewind($this->test_column);
+        } else { // it's already a stream
+            $this->test_column = $v;
+        }
+        $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
+
+        return $this;
+    } // setBlobColumn()
+EOT;
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The bracket of the previous method was not found.');
+
+        // Act
+        $behavior->objectFilter($script);
+    }
+
+    /**
+     * @return void
+     */
+    public function testObjectFilterForBlobColumnSetterExpectsException(): void
+    {
+        // Arrange
+        $behavior = new MockEncryptionBehavior(
+            $this->columns,
+            [
+                'column_name' => 'BlobColumn',
+                'searchable' => false,
+            ],
+        );
+
+        $script = <<<'EOT'
+    public function setBlobColumn($v)
+    {
+        // Because BLOB columns are streams in PDO we have to assume that they are
+        // always modified when a new value is passed in.  For example, the contents
+        // of the stream itself may have changed externally.
+        if (!is_resource($v) && $v !== null) {
+            $this->test_column = fopen('php://memory', 'r+');
+            fwrite($this->test_column, $v);
+            rewind($this->test_column);
+        } else { // it's already a stream
+            $this->test_column = $v;
+        }
+        $this->modifiedColumns[StudentTableMap::COL_TEST_COLUMN] = true;
+
+        return $this;
+    } // setBlobColumn()
+EOT;
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('The bracket of the previous method was not found.');
+
+        // Act
+        $behavior->objectFilter($script);
     }
 
     /**
