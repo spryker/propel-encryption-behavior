@@ -99,10 +99,10 @@ class EncryptionBehavior extends Behavior
             }
 
             $columnPhpName = $column->getPhpName();
-            $isColumnBlobType = $column->getType() === PropelTypes::BLOB;
+            $isBlobTypeColumn = $column->getType() === PropelTypes::BLOB;
 
-            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $isColumnBlobType);
-            $this->addDecryptionToGetter($script, $columnPhpName, $isColumnBlobType);
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $isBlobTypeColumn);
+            $this->addDecryptionToGetter($script, $columnPhpName, $isBlobTypeColumn);
         }
     }
 
@@ -332,7 +332,7 @@ EOT;
      * @param string $script
      * @param string $columnPhpName
      * @param bool $isSearchable
-     * @param bool $isColumnBlobType
+     * @param bool $isBlobTypeColumn
      *
      * @throws \Exception
      *
@@ -342,11 +342,11 @@ EOT;
         string &$script,
         string $columnPhpName,
         bool $isSearchable,
-        bool $isColumnBlobType
+        bool $isBlobTypeColumn
     ): void {
         $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
 
-        if ($isColumnBlobType) {
+        if ($isBlobTypeColumn) {
             $previousMethodBracketLocation = strrpos(substr($script, 0, $setterLocation), '}');
 
             if ($previousMethodBracketLocation === false) {
@@ -377,7 +377,7 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
-     * @param bool $isColumnBlobType
+     * @param bool $isBlobTypeColumn
      *
      * @throws \Exception
      *
@@ -386,11 +386,11 @@ EOT;
     protected function addDecryptionToGetter(
         string &$script,
         string $columnPhpName,
-        bool $isColumnBlobType
+        bool $isBlobTypeColumn
     ): void {
         $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
-        if ($isColumnBlobType) {
+        if ($isBlobTypeColumn) {
             $previousMethodBracketLocation = strrpos(substr($script, 0, $getterLocation), '}');
 
             if ($previousMethodBracketLocation === false) {
