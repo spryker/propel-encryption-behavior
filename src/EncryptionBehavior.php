@@ -99,10 +99,10 @@ class EncryptionBehavior extends Behavior
             }
 
             $columnPhpName = $column->getPhpName();
-            $hasColumnBlobType = $column->getType() === PropelTypes::BLOB;
+            $isColumnBlobType = $column->getType() === PropelTypes::BLOB;
 
-            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $hasColumnBlobType);
-            $this->addDecryptionToGetter($script, $columnPhpName, $hasColumnBlobType);
+            $this->addEncryptionToSetter($script, $columnPhpName, $isSearchable, $isColumnBlobType);
+            $this->addDecryptionToGetter($script, $columnPhpName, $isColumnBlobType);
         }
     }
 
@@ -332,7 +332,7 @@ EOT;
      * @param string $script
      * @param string $columnPhpName
      * @param bool $isSearchable
-     * @param bool $hasColumnBlobType
+     * @param bool $isColumnBlobType
      *
      * @throws \Exception
      *
@@ -342,15 +342,15 @@ EOT;
         string &$script,
         string $columnPhpName,
         bool $isSearchable,
-        bool $hasColumnBlobType
+        bool $isColumnBlobType
     ): void {
         $setterLocation = $this->getMethodLocation($script, "set$columnPhpName");
 
-        if ($hasColumnBlobType) {
+        if ($isColumnBlobType) {
             $previousMethodBracketLocation = strrpos(substr($script, 0, $setterLocation), '}');
 
             if ($previousMethodBracketLocation === false) {
-                throw new Exception('The bracket of the previous method was not found.');
+                throw new Exception('The bracket of the     previous method was not found.');
             }
 
             $paramAnnotationLocation = strpos($script, 'param resource', $previousMethodBracketLocation);
@@ -377,7 +377,7 @@ EOT;
     /**
      * @param string $script
      * @param string $columnPhpName
-     * @param bool $hasColumnBlobType
+     * @param bool $isColumnBlobType
      *
      * @throws \Exception
      *
@@ -386,11 +386,11 @@ EOT;
     protected function addDecryptionToGetter(
         string &$script,
         string $columnPhpName,
-        bool $hasColumnBlobType
+        bool $isColumnBlobType
     ): void {
         $getterLocation = $this->getMethodLocation($script, "get$columnPhpName");
 
-        if ($hasColumnBlobType) {
+        if ($isColumnBlobType) {
             $previousMethodBracketLocation = strrpos(substr($script, 0, $getterLocation), '}');
 
             if ($previousMethodBracketLocation === false) {
