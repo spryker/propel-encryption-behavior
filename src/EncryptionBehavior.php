@@ -350,7 +350,7 @@ EOT;
             $previousMethodBracketLocation = strrpos(substr($script, 0, $setterLocation), '}');
 
             if ($previousMethodBracketLocation === false) {
-                throw new Exception('The bracket of the     previous method was not found.');
+                throw new Exception('The bracket of the previous method was not found.');
             }
 
             $paramAnnotationLocation = strpos($script, 'param resource', $previousMethodBracketLocation);
