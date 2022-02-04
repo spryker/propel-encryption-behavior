@@ -1,13 +1,14 @@
 # Spryker - PropelEncryptionBehavior
 
 [![Build Status](https://github.com/spryker/propel-encryption-behavior/workflows/CI/badge.svg?branch=master)](https://github.com/spryker/propel-encryption-behavior/actions?query=workflow%3ACI+branch%3Amaster)
+[![codecov](https://codecov.io/gh/spryker/propel-encryption-behavior/branch/master/graph/badge.svg?token=lq2OA63qkL)](https://codecov.io/gh/spryker/propel-encryption-behavior)
 [![Latest Stable Version](https://poser.pugx.org/spryker/propel-encryption-behavior/v/stable.svg)](https://packagist.org/packages/spryker/propel-encryption-behavior)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 [![License](https://poser.pugx.org/spryker/propel-encryption-behavior/license)](https://packagist.org/packages/spryker/propel-encryption-behavior)
 
 Seamlessly encrypt/decrypt Propel2 data fields. This library is a *plugin* for the [Propel2 ORM framework](http://propelorm.org/).
-The library is a fork of [Athens\Encryption](https://github.com/AthensFramework/Encryption). 
+The library is a fork of [Athens\Encryption](https://github.com/AthensFramework/Encryption).
 
 For example:
 
@@ -58,7 +59,7 @@ For example:
 
     Cipher::resetInstance();
     Cipher::createInstance("mysecretpassphrase_2");
-    
+
     // ... read or write data with another passphrase
 ```
 
