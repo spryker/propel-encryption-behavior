@@ -30,6 +30,9 @@ jobs:
 
         - name: Upload coverage to Codecov
           uses: codecov/codecov-action@v2
+          with:
+              directory: tmp/coverage/
+              files: coverage.xml
 
   validation_php_7-3:
     runs-on: ubuntu-18.04
