@@ -6,6 +6,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  testsuite:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+        matrix:
+          php-version: [
+              '7.3'
+          ]
+
+    steps:
+        - uses: actions/checkout@master
+
+        - name: Generate coverage report
+          run: |
+              composer run-script test-coverage
+
+        - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v2
+          with:
+              directory: tmp/coverage/
+              files: ./coverage.xml
+
   validation_php_7-3:
     runs-on: ubuntu-18.04
     strategy:
