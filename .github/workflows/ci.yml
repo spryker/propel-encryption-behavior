@@ -6,39 +6,32 @@ on:
   workflow_dispatch:
 
 jobs:
-    testsuite:
-        runs-on: ubuntu-20.04
-        strategy:
-            fail-fast: false
-            matrix:
-                php-version: ['7.3', '8.1']
+  testsuite:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [
+            '7.3'
+        ]
 
-        steps:
-            - uses: actions/checkout@v2
+    steps:
+        - uses: actions/checkout@feature/apps-2952/dev-add-auto-coverage-report
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php-version }}
-                  extensions: mbstring, intl, bcmath
-                  coverage: pcov
+        - name: Composer install
+          run: |
+              composer --version
+              composer install
 
-            - name: Composer install
-              run: |
-                  composer --version
-                  composer install
+        - name: Generate coverage report
+          run: |
+              composer run-script test-coverage
 
-            - name: Run PHPUnit
-              run: |
-                  if [[ ${{ matrix.php-version }} == '7.3' ]]; then
-                    vendor/bin/phpunit --coverage-clover=coverage.xml
-                  else
-                    vendor/bin/phpunit
-                  fi
-
-            - name: Code Coverage Report
-              if: success() && matrix.php-version == '7.3'
-              uses: codecov/codecov-action@v1
+        - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v2
+          with:
+              directory: tmp/coverage/
+              files: ./coverage.xml
 
   validation_php_7-3:
     runs-on: ubuntu-18.04
