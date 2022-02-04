@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
-        matrix:
-          php-version: [
-              '7.3'
-          ]
+      matrix:
+        php-version: [
+            '7.3'
+        ]
 
     steps:
         - uses: actions/checkout@master
