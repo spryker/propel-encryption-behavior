@@ -18,6 +18,11 @@ jobs:
     steps:
         - uses: actions/checkout@master
 
+        - name: Composer install
+          run: |
+              composer --version
+              composer install
+
         - name: Generate coverage report
           run: |
               composer run-script test-coverage
