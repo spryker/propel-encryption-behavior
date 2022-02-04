@@ -28,10 +28,7 @@ jobs:
               composer run-script test-coverage
 
         - name: Upload coverage to Codecov
-          uses: codecov/codecov-action@v1
-          with:
-              directory: tmp/coverage/
-              files: coverage.xml
+          uses: codecov/codecov-action@v2
 
   validation_php_7-3:
     runs-on: ubuntu-18.04
