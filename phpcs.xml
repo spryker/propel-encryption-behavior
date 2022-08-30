@@ -16,4 +16,6 @@
         <severity>0</severity>
     </rule>
 
+    <exclude-pattern>*/tests/MockLegacy/*</exclude-pattern>
+
 </ruleset>
