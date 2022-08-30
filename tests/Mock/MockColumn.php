@@ -7,9 +7,10 @@
 
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
+use Propel\Generator\Model\Column;
 use Propel\Generator\Model\PropelTypes;
 
-class MockColumn
+class MockColumn extends Column
 {
     /**
      * @var string
@@ -17,17 +18,20 @@ class MockColumn
     protected $phpName;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $type;
 
     /**
-     * @param string $phpName
-     * @param string $type
+     * @param string $name The column's name
+     * @param string|null $type The column's type
+     * @param string|int|null $size The column's size
      */
-    public function __construct(string $phpName, string $type)
+    public function __construct(string $name, ?string $type, $size = null)
     {
-        $this->phpName = $phpName;
+        parent::__construct($name, $type, $size);
+
+        $this->phpName = $name;
         $this->type = $type;
     }
 
@@ -44,7 +48,7 @@ class MockColumn
      */
     public function getType(): string
     {
-        return $this->type;
+        return (string)$this->type;
     }
 
     /**

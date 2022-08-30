@@ -7,6 +7,7 @@
 
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
+use Propel\Generator\Model\Table;
 use Spryker\PropelEncryptionBehavior\EncryptionBehavior;
 
 class MockEncryptionBehavior extends EncryptionBehavior
@@ -17,7 +18,7 @@ class MockEncryptionBehavior extends EncryptionBehavior
     protected $table;
 
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected $parameters;
 
@@ -28,13 +29,13 @@ class MockEncryptionBehavior extends EncryptionBehavior
     public function __construct(array $columns, array $parameters)
     {
         $this->parameters = $parameters;
-        $this->table = new MockTable($columns);
+        $this->table = new MockTable('mock', $columns);
     }
 
     /**
-     * @return \Propel\Generator\Model\Table|\Spryker\PropelEncryptionBehavior\Test\Mock\MockTable
+     * @return \Propel\Generator\Model\Table|null
      */
-    public function getTable()
+    public function getTable(): ?Table
     {
         return $this->table;
     }

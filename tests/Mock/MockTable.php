@@ -7,43 +7,50 @@
 
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
-class MockTable
+use Propel\Generator\Model\Column;
+use Propel\Generator\Model\Table;
+
+class MockTable extends Table
 {
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected $columns;
 
     /**
-     * @param array<mixed> $columns
+     * @param string $name
+     * @param array<string, mixed> $columns
      */
-    public function __construct(array $columns)
+    public function __construct(string $name, array $columns)
     {
+        parent::__construct($name);
+
         $this->columns = $columns;
     }
 
     /**
-     * @param string $columnName
+     * @param string|null $name
+     * @param bool $caseInsensitive
      *
-     * @return mixed
+     * @return \Propel\Generator\Model\Column|null
      */
-    public function getColumn(string $columnName)
+    public function getColumn(?string $name, bool $caseInsensitive = false): ?Column
     {
-        return $this->columns[$columnName];
+        return $this->columns[$name];
     }
 
     /**
-     * @param string $columnName
+     * @param string $phpName
      *
-     * @return mixed
+     * @return \Propel\Generator\Model\Column|null
      */
-    public function getColumnByPhpName(string $columnName)
+    public function getColumnByPhpName(string $phpName): ?Column
     {
-        return $this->columns[$columnName];
+        return $this->columns[$phpName];
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
     public function getColumns(): array
     {
