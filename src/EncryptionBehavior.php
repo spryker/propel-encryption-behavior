@@ -49,6 +49,10 @@ class EncryptionBehavior extends Behavior
         }
 
         $table = $this->getTable();
+        if ($table === null) {
+            throw new Exception('No table existent.');
+        }
+
         $columnNames = $this->getColumnNames();
         $searchableColumnNames = $this->getSearchableColumnNames();
 
@@ -88,6 +92,9 @@ class EncryptionBehavior extends Behavior
         $columnNames = $this->getColumnNames();
         $searchableColumnNames = $this->getSearchableColumnNames();
         $table = $this->getTable();
+        if ($table === null) {
+            throw new Exception('No table existent.');
+        }
 
         foreach ($columnNames as $columnName) {
             $isSearchable = $this->isSearchable($columnName, $searchableColumnNames);
@@ -189,7 +196,7 @@ EOT;
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string>
      */
     protected function getColumnNames(): array
     {
@@ -197,7 +204,7 @@ EOT;
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string>
      */
     protected function getSearchableColumnNames(): array
     {
@@ -353,7 +360,7 @@ EOT;
                 throw new Exception('The bracket of the previous method was not found.');
             }
 
-            $paramAnnotationLocation = strpos($script, 'param resource', $previousMethodBracketLocation);
+            $paramAnnotationLocation = (int)strpos($script, 'param resource', $previousMethodBracketLocation);
             $script = substr_replace($script, 'param string', $paramAnnotationLocation, 14);
         }
 
@@ -397,7 +404,7 @@ EOT;
                 throw new Exception('The bracket of the previous method was not found.');
             }
 
-            $returnAnnotationLocation = strpos($script, 'return resource', $previousMethodBracketLocation);
+            $returnAnnotationLocation = (int)strpos($script, 'return resource', $previousMethodBracketLocation);
             $script = substr_replace($script, 'return string', $returnAnnotationLocation, 15);
         }
 

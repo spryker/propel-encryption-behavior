@@ -7,7 +7,9 @@
 
 namespace Spryker\PropelEncryptionBehavior\Test\Mock;
 
+use Propel\Generator\Model\Table;
 use Spryker\PropelEncryptionBehavior\EncryptionBehavior;
+use Spryker\PropelEncryptionBehavior\Test\MockLegacy\MockTable as LegacyMockTable;
 
 class MockEncryptionBehavior extends EncryptionBehavior
 {
@@ -17,7 +19,7 @@ class MockEncryptionBehavior extends EncryptionBehavior
     protected $table;
 
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected $parameters;
 
@@ -28,14 +30,28 @@ class MockEncryptionBehavior extends EncryptionBehavior
     public function __construct(array $columns, array $parameters)
     {
         $this->parameters = $parameters;
-        $this->table = new MockTable($columns);
+        if ($this->isPreferLowest()) {
+            $this->table = new LegacyMockTable('mock', $columns);
+        } else {
+            $this->table = new MockTable('mock', $columns);
+        }
     }
 
     /**
-     * @return \Propel\Generator\Model\Table|\Spryker\PropelEncryptionBehavior\Test\Mock\MockTable
+     * @return \Propel\Generator\Model\Table|null
      */
-    public function getTable()
+    public function getTable(): ?Table
     {
         return $this->table;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isPreferLowest(): bool
+    {
+        $content = file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'composer.lock');
+
+        return strpos($content, '"version": "2.0.0-beta1",') !== false;
     }
 }

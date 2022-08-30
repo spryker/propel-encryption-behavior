@@ -5,9 +5,8 @@
  * For full license information, please view the LICENSE file that was distributed with this source code.
  */
 
-namespace Spryker\PropelEncryptionBehavior\Test\Mock;
+namespace Spryker\PropelEncryptionBehavior\Test\MockLegacy;
 
-use Propel\Generator\Model\Column;
 use Propel\Generator\Model\Table;
 
 class MockTable extends Table
@@ -29,12 +28,12 @@ class MockTable extends Table
     }
 
     /**
-     * @param string|null $name
-     * @param bool $caseInsensitive
+     * @param string $name
+     * @param bool $caseInsensitive Whether the check is case insensitive.
      *
-     * @return \Propel\Generator\Model\Column|null
+     * @return mixed
      */
-    public function getColumn(?string $name, bool $caseInsensitive = false): ?Column
+    public function getColumn($name, $caseInsensitive = false)
     {
         return $this->columns[$name];
     }
@@ -42,15 +41,15 @@ class MockTable extends Table
     /**
      * @param string $phpName
      *
-     * @return \Propel\Generator\Model\Column|null
+     * @return mixed
      */
-    public function getColumnByPhpName(string $phpName): ?Column
+    public function getColumnByPhpName($phpName)
     {
         return $this->columns[$phpName];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function getColumns(): array
     {
