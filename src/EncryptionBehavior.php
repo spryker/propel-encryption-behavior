@@ -14,7 +14,7 @@ use Propel\Generator\Model\PropelTypes;
 class EncryptionBehavior extends Behavior
 {
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected $parameters = [
         'searchable' => false,
