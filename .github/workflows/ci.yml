@@ -156,10 +156,13 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Composer prefer lowest
-        run: composer lowest-setup
+        run: composer update --prefer-lowest --prefer-stable
 
       - name: Run tests
         run: composer test
+
+      - name: Composer prefer lowest
+        run: composer lowest-setup
 
       - name: Validate prefer lowest
         run: composer lowest
