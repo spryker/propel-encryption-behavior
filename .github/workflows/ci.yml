@@ -12,7 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [
-            '7.4'
+            '7.4',
+            '8.2'
         ]
 
     steps:
@@ -37,7 +38,7 @@ jobs:
         - name: Upload coverage to Codecov
           uses: codecov/codecov-action@v1
 
-  validation_php_7-3:
+  validation_php_min:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -84,19 +85,17 @@ jobs:
       - name: Run tests
         run: composer test
 
-  validation_php_8-1:
+  validation_php_max:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
         php-version: [
-            '8.1'
+            '8.2'
         ]
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
